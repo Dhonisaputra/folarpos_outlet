@@ -116,6 +116,55 @@ export class KitchenbarPage {
         this.helper.events.unsubscribe('monitoring_request:refresh')
     }
 
+    changeProsesForSelectedItem(item)
+    {
+        let url = this.config.base_url('admin/outlet/transaction/order/update');
+        let data = {
+            update:{
+                pay_dt_order_status: item.pay_dt_order_status == 0? 1 : (item.pay_dt_order_status == 1? 2 : 3),
+            },
+            in: [['pay_dt_id', item.selected_item]],
+            where: {
+                pay_id: item.pay_id,
+                order_session: item.order_session,
+            }
+        }
+        this.helper.$.post(url, data)
+        .done((res)=>{
+            res = JSON.parse(res)
+            if(res.code == 200)
+            {
+                this.filter_transaction();
+                switch (parseInt(item.pay_dt_order_status)) {
+                    case 0:
+                        this.helper.toast.create({
+                            message: "Status pesanan berhasil diubah menjadi proses",
+                            duration: 2000
+                        }).present()
+                        var nota = this.helper.outlet_initial_name()+'/NOTA/'+this.helper.lead_zero(item.pay_id, 5);
+                        this.helper.airemote.send(this.outlet+'.waiters:proses-done','',{title: "Pesanan nota "+nota+' telah diproses' }, () => {
+                        })
+                        break;
+
+                    case 1:
+                        this.helper.toast.create({
+                            message: "Status pesanan berhasil diselesaikan",
+                            duration: 4000
+                        }).present()
+                        var nota = this.helper.outlet_initial_name()+'/NOTA/'+this.helper.lead_zero(item.pay_id, 5);
+                        this.helper.airemote.send(this.outlet+'.waiters:proses-done','',{title: "Pesanan nota "+nota+' telah selesai' }, () => {
+
+                        })
+                        break;
+                    
+                    default:
+                        // code...
+                        break;
+                }
+            }
+        })
+    }
+
     changeProses(item)
     {
         let url = this.config.base_url('admin/outlet/transaction/order/update');
@@ -325,14 +374,74 @@ export class KitchenbarPage {
             this.transaction_params.data.order_by = this.order_by;
 
             this.get_transaction(this.transaction_params)
-            .done((res)=>{
+            .then((res:any)=>{
                 resolve(res)
             })
-            .fail(()=>{
+            .catch(()=>{
                 reject();
             })
 
         })
+    }
+
+    itemWantToProcess(item)
+    {
+        let id = item.group_pay_dt_id.split(',');
+        let name = item.group_prod_name.split(',');
+        let data = [];
+        this.helper.$.each(item.orders, (i, val)=>{
+
+            data[i] = {
+                value: parseInt(val.pay_dt_id),
+                label: val.prod_name,
+                type: 'checkbox',
+                checked: true
+            }
+        })
+
+
+        this.helper.alertCtrl.create({
+            title: "Daftar order",
+            message: "Silahkan pilih order yang akan diproses",
+            inputs: data,
+            buttons:[{
+                text: "Proses order terpilih",
+                cssClass: 'btn-primary',
+                handler: (res)=>{
+                    item.selected_item = res
+                    this.changeProsesForSelectedItem(item)
+                }
+            },"Tutup"]
+        }).present();
+    }
+    itemWantToNextProcess(item)
+    {
+        let data = [];
+        this.helper.$.each(item.orders_process, (i, val)=>{
+
+            data[i] = {
+                value: parseInt(val.pay_dt_id),
+                label: val.prod_name,
+                type: 'checkbox',
+                checked: true
+            }
+        })
+
+
+        this.helper.alertCtrl.create({
+            title: "Daftar order",
+            message: "Pilih order yang akan tandai selesai",
+            inputs: data,
+            buttons:[{
+                text: "Proses order terpilih",
+                cssClass: 'btn-primary',
+                handler: (res)=>{
+                    item.selected_item = res
+                    item.pay_dt_order_status = 1
+                    this.changeProsesForSelectedItem(item)
+                }
+            },"Tutup"]
+        }).present();
     }
 
     edit_transaction(i, item)

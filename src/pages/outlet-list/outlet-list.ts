@@ -101,7 +101,7 @@ export class OutletListPage {
                 resolve(res)
             })
             .catch(()=>{
-                reject()
+                // reject()
                 this.isSearch = true;
                 this.outlets = []
             })

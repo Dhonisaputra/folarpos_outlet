@@ -103,7 +103,7 @@ export class AiRemoteProvider {
     {
         return {
             host:'https://folariumremote.herokuapp.com/',
-            apiKey:'5pFv2d0zM7z7iM/LekW8izupPjzhtmgqgVQXKz2y+VwQqZoU8hhy8N64h9zdOokbPZxxh5APqQ4wQPBysBVmJa0=' ,
+            apiKey:'instantFolar3030' ,
             id:undefined
         }
     }

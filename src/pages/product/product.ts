@@ -522,7 +522,7 @@ export class ProductPage
 	{
 		return this.billProvider.get_unpaid_bill({
 			outlet: this.outlet,
-			fields: 'payment_nominal,outlet,pay_id,payment_date_only',
+			fields: 'payment_nominal,outlet,pay_id,payment_date_only,payment_cancel_status',
 			where: {
 				payment_date_only: moment().format('YYYY-MM-DD'),
 				payment_nominal: 0,
