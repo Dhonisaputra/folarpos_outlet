@@ -88,9 +88,10 @@
 		<div>
 			<ion-card *ngFor="let item of items; let i = index" class="">
 				<ion-card-header>
-					<span *ngIf="item.order_session" class="bs-label label-primary">{{item.order_session > 0? "Extra #"+item.order_session : 'Pesanan Awal'}}</span><br>
+					<span *ngIf="item.order_session" class="bs-label label-primary" style="margin-bottom: 8px;">{{item.order_session > 0? "Extra #"+item.order_session : 'Pesanan Awal'}}</span><br>
 					<span>Pesanan {{helper.outlet_initial_name()}}/NOTA/{{helper.lead_zero(item.pay_id, 5)}} </span><br>
-					<span *ngIf="item.member_name"> a/n {{item.member_name}} &middot;</span> 
+					<span> a/n {{item.pay_visitor? item.pay_visitor : item.member_name}} &middot;</span> 
+					<span> {{item.tab_id != 0? 'Meja'+item.tab_name : 'Meja -'}} </span> 
 					
 				</ion-card-header>
 				<ion-card-content style="border: 1px solid #e3e3e3; margin-top: 10px;padding-bottom: 2px;">

@@ -15,9 +15,9 @@
 			<ion-title *ngIf="state == 'index'">Printer</ion-title>
 			<ion-title *ngIf="state == 'search_print'">Cari Printer</ion-title>
 		
-			<ion-buttons end>
-				<button ion-button clear icon-left color="light" (click)="check_unpaired_device()">
-				  <ion-icon name="print"></ion-icon> Cari printer
+			<ion-buttons end *ngIf="printer_list_status">
+				<button ion-button clear icon-left color="light" (click)="form_status=true;printer_list_status=false;">
+				  <ion-icon name="close"></ion-icon> Kembali
 				</button>
 			</ion-buttons>
 
@@ -29,46 +29,64 @@
 <ion-content padding>
 	<ion-grid>
 		<ion-row>
-			<ion-col col-4>
+			<ion-col col-md-4 col-12>
 
 				<ion-list>
-					<ion-item></ion-item>
 					<ion-item>
-					  	<ion-label> Using Bluetooth</ion-label>
-					  	<ion-toggle checked="false"></ion-toggle>
+					  	<ion-label>  
+				  			<ion-icon color="primary" ios="ios-wifi" md="ios-wifi" *ngIf="data_printer.outlet_printer_connect_with == 'wifi'"></ion-icon>
+				  			<ion-icon color="primary" ios="ios-bluetooth" md="ios-bluetooth" *ngIf="data_printer.outlet_printer_connect_with == 'bluetooth'"></ion-icon>
+					  		&nbsp;Printer {{data_printer.outlet_printer_connect_with}} 
+					  	</ion-label>
+					  	<ion-toggle checked="false" [(ngModel)]="printer_connection" (ionChange)="search_bluetooth_printer($event)"></ion-toggle>
 					</ion-item>
 					<ion-item>
-						<ion-label floating>Alamat printer</ion-label>
-						<ion-input type="text"></ion-input>
+						<ion-label stacked>Alamat printer</ion-label>
+						<ion-input type="text" [(ngModel)]="data_printer.outlet_printer_address"></ion-input>
+					</ion-item>
+
+					<ion-item>
+						<ion-label stacked>Printer name</ion-label>
+						<ion-input type="text" [(ngModel)]="data_printer.outlet_printer_name"></ion-input>
 					</ion-item>
 
 					<ion-item>
-						<ion-label floating>Password</ion-label>
-						<ion-input type="password"></ion-input>
+						<ion-label stacked>printer type </ion-label>
+						<ion-select [(ngModel)]="data_printer.print_type" style="display:flex; justify-content: space-between;">
+					      <ion-option *ngFor="let item of data_printer_type" value="{{item}}">Printer {{item}}</ion-option>
+					    </ion-select>
 					</ion-item>
 
+					<ion-item>
+						<button ion-button full (tap)="savePrinter()"><ion-icon name="send"></ion-icon> &nbsp; Save Printer</button>
+						<button ion-button full color="mute" (tap)="form_status=false;data_status=true;"> <ion-icon name="close"></ion-icon> &nbsp; Batal</button>
+					</ion-item>
 				</ion-list>
+			</ion-col>
+			<ion-col col-md-8 col-12>
+				<div *ngFor="let item of printer_list">
+				  	<button ion-item icon-left>
+						<ion-icon ios="ios-bluetooth" md="md-bluetooth" *ngIf="item.outlet_printer_connect_with == 'bluetooth'"></ion-icon>
+						<ion-icon ios="ios-wifi" md="ios-wifi" *ngIf="item.outlet_printer_connect_with == 'wifi'"></ion-icon>
+				    	{{ item.outlet_printer_name }} <span class="bs-badge pull-right">{{item.outlet_printer_address}}</span>
+				  	</button>  
+			  	</div>
+			</ion-col>
+			<ion-col col-12 *ngIf="printer_list_status">
+				<div *ngFor="let item of printer_unconnected">
+				  	<button ion-item (click)="itemSelected(item)">
+						<ion-icon ios="ios-bluetooth" md="md-bluetooth"></ion-icon>
+				    	{{ item.aliasName }}
+				  	</button>  
+			  	</div>
 			</ion-col>
 
 		</ion-row>
 		
 	</ion-grid>
 
-	<ion-list>
-	  	<button ion-item *ngIf="default_printer && default_printer.aliasName">
-			<ion-icon ios="ios-bluetooth" md="md-bluetooth"></ion-icon>
-	    	{{ default_printer.aliasName }}
-	    	<span class="badge pull-right">default</span>
-	  	</button>  
-		<div class="text-align--center" *ngIf="!default_printer && !default_printer.aliasName">Tidak ditemukan printer default</div>
-	
-		<div class="text-align--center" *ngIf="search_print && printer_unconnected.length < 1">Tidak ada printer ditemukan</div>
-	  	<ion-item-divider color="light" *ngIf="search_print && printer_unconnected.length > 0"> {{printer_unconnected.length}} perangkat ditemukan </ion-item-divider>
-	  	<div *ngFor="let item of printer_unconnected">
-		  	<button ion-item *ngIf="item.address != default_printer.address" (click)="itemSelected(item)">
-				<ion-icon ios="ios-bluetooth" md="md-bluetooth"></ion-icon>
-		    	{{ item.aliasName }}
-		  	</button>  
-	  	</div>
-	</ion-list>
+	<ion-fab right bottom *ngIf="!helper.platform.is('tablet') && data_status">
+	    <button ion-fab color="main" (tap)="addPrinter()"><ion-icon name="add"></ion-icon></button>
+ 	</ion-fab>
+
 </ion-content>

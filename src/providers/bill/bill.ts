@@ -56,11 +56,7 @@ export class BillProvider {
     save(data:any={})
     {
         let item = this.helper.local.get_params(this.helper.config.variable.credential).outlet;
-        let loader = this.loadingCtrl.create({
-          content: "Memproses permintaan...",
-        });
-        loader.present();
-
+        
         let alertData = this.alertCont.create({
             title: "Process gagal",
             message: "Terdapat kesalahan ketika menyimpan nota. Silahkan laporkan pengembang sistem.",
@@ -80,47 +76,37 @@ export class BillProvider {
 
         this.bill = billdata;
 
-        return $.post(url, billdata)
-        .done((res) => {
+        return this.helper.loading_countdown({url: url, data:billdata}, {onload_title: "Menyimpan order. Silahkan tunggu.."})
+        .then((res:any) => {
             res = !this.helper.isJSON(res)? res : JSON.parse(res);
             
             if(res.code == 200)
             {
 
-                this.helper.airemote.send(item.outlet_id+'.app.cashier:new-order','',{title:"Terdapat pesanan baru"}, function(){})
+                this.helper.airemote.send(item.outlet_id+'.app.cashier:new-order','',{uuid: this.helper.uuid, title:"Terdapat pesanan baru"}, function(){})
                 successData.present();
 
             }else
             {
                 alertData.present();
             }
+            return res;
         })
-        .fail(()=>{
+        .catch(()=>{
             alertData.present();
         })
-        .always(()=>{
-            loader.dismiss();
-        })
     }
-    get(data:any)
+    get(data:any, opt:any={})
     {
 
         var url = this.config.base_url('admin/outlet/transaction/get')
         data = data
-        return $.post(url, data)
-        .done((res) => {
-            res = JSON.parse(res)
-            if(res.code == 500)
-            {
-
-
-            }
-        })
+        return this.helper.loading_countdown({url:url, data:data}, opt)
     }
     
-    get_unpaid_bill(data:any)
+    get_unpaid_bill(data:any, opt:any={})
     {
-        return this.get(data)
+        return this.get(data, opt)
     }
 
     get_bill()
@@ -590,7 +576,7 @@ export class BillProvider {
             payment_cancel_status: 1
 
         }
-        return $.post(url, billdata)
+        return this.helper.loading_countdown({url:url, data:billdata})
     }
 
 

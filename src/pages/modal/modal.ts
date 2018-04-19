@@ -57,13 +57,14 @@ export class ModalPage {
         this.modal.users_outlet_id = this.users_outlet;
         this.modal.outlet_id = this.outlet;
 
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
         	url: url,
         	data: this.modal,
         	type: 'POST',
         	dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            load.dismiss();
         	if(res.code == 200)
         	{
         		this.get_modal();
@@ -78,15 +79,13 @@ export class ModalPage {
 
             }
         })
-        .fail(()=>{
+        .catch(()=>{
+            load.dismiss();
             this.helper.alertCtrl.create({
                 title: "Kesalahan code:"+500,
                 message: "Terdapat kesalahan saat penginputan data. Silahkan laporkan pengembang sistem untuk tindak lanjut",
                 buttons: ["OK"]
             }).present();
-        })
-        .always(()=>{
-        	load.dismiss();
         })
 	}	
 
@@ -102,13 +101,14 @@ export class ModalPage {
         this.modal.outlet_id = this.outlet;
 
         load.present();
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
         	url: url,
         	data: this.modal,
         	type: 'POST',
         	dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            load.dismiss();
         	if(res.code == 200)
         	{
                 this.reset_modal_form_data()
@@ -116,8 +116,8 @@ export class ModalPage {
                 this.get_modal();
         	}
         })
-        .always(()=>{
-        	load.dismiss();
+        .catch(()=>{
+            load.dismiss();
         })
 	}
 
@@ -132,13 +132,14 @@ export class ModalPage {
         this.modal.users_outlet_id = this.users_outlet;
         this.modal.outlet_id = this.outlet;
 
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
         	url: url,
         	data: this.modal,
         	type: 'POST',
         	dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            load.dismiss();
         	if(res.code == 200)
         	{
         		this.get_modal();
@@ -146,7 +147,7 @@ export class ModalPage {
 	        	// this.modal = {}
         	}
         })
-        .always(()=>{
+        .catch(()=>{
         	load.dismiss();
         })
 	}
@@ -169,19 +170,20 @@ export class ModalPage {
             join:["users_outlet"]
         }
         load.present();
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
         	url: url,
         	data: params,
         	type: 'POST',
         	dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            load.dismiss();
         	if(res.code == 200)
         	{
         		this.data_modal = res.data
         	}
         })
-        .always(()=>{
+        .catch(()=>{
         	load.dismiss();
         })
 	}

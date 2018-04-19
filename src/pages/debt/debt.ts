@@ -59,20 +59,21 @@ import { HelperProvider } from '../../providers/helper/helper';
  		}
 
 
- 		this.helper.$.ajax({
+ 		this.helper.loading_countdown({
  			url: url,
  			type: 'POST',
  			data: data,
  			dataType: "json"
  		})
- 		.done((res)=>{
+ 		.then((res:any)=>{
+ 			loading.dismiss();
  			if(res.code == 200)
  			{
  				this.debts = res.data;
  			}
  			console.log(res);
  		})
- 		.always(()=>{
+ 		.catch(()=>{
  			loading.dismiss();
  		})
  	}
@@ -94,13 +95,14 @@ import { HelperProvider } from '../../providers/helper/helper';
  		}
 
 
- 		this.helper.$.ajax({
+ 		this.helper.loading_countdown({
  			url: url,
  			type: 'POST',
  			data: data,
  			dataType: "json"
  		})
- 		.done((res)=>{
+ 		.then((res:any)=>{
+ 			loading.dismiss();
  			if(res.code == 200)
  			{
  				this.filter_params = 'member_mail';
@@ -109,7 +111,7 @@ import { HelperProvider } from '../../providers/helper/helper';
  			}
  			console.log(res);
  		})
- 		.always(()=>{
+ 		.catch(()=>{
  			loading.dismiss();
  		})
  	}
@@ -168,13 +170,14 @@ import { HelperProvider } from '../../providers/helper/helper';
  			item.pay_type = "PAY_BY_BILL";
  		}
 
- 		this.helper.$.ajax({
+ 		this.helper.loading_countdown({
  			url: url,
  			type: 'POST',
  			data: item,
  			dataType: "json"
  		})
- 		.done((res)=>{
+ 		.then((res:any)=>{
+ 			loading.dismiss();
  			if(res.code == 200)
  			{
  				switch (this.state) {
@@ -212,7 +215,7 @@ import { HelperProvider } from '../../providers/helper/helper';
  				}
  			}
  		})
- 		.always(()=>{
+ 		.catch(()=>{
  			loading.dismiss();
  		})
  	}
@@ -234,13 +237,14 @@ import { HelperProvider } from '../../providers/helper/helper';
  			},
  			group_by: 'pay_id'
  		}
- 		this.helper.$.ajax({
+ 		this.helper.loading_countdown({
  			url: url,
  			type: 'POST',
  			data: data,
  			dataType: "json"
  		})
- 		.done((res)=>{
+ 		.then((res:any)=>{
+ 			loading.dismiss();
  			if(res.code == 200)
  			{
  				if(res.data.length <= 0)
@@ -252,7 +256,7 @@ import { HelperProvider } from '../../providers/helper/helper';
  				}
  			}
  		})
- 		.always(()=>{
+ 		.catch(()=>{
  			loading.dismiss();
  		})
  	}	
@@ -275,13 +279,14 @@ import { HelperProvider } from '../../providers/helper/helper';
  			},
  			order_by: 'debt_date DESC'
  		}
- 		this.helper.$.ajax({
+ 		this.helper.loading_countdown({
  			url: url,
  			type: 'POST',
  			data: data,
  			dataType: "json"
  		})
- 		.done((res)=>{
+ 		.then((res:any)=>{
+ 			loading.dismiss();
  			if(res.code == 200)
  			{
  				if(res.data.length <= 0)
@@ -293,7 +298,7 @@ import { HelperProvider } from '../../providers/helper/helper';
  				}
  			}
  		})
- 		.always(()=>{
+ 		.catch(()=>{
  			loading.dismiss();
  		})
  	}	
@@ -418,13 +423,14 @@ import { HelperProvider } from '../../providers/helper/helper';
             fields : 'outlet_address,outlet_phone,outlet_logo,outlet_name,total_debt_rest,debt_id,pay_id,member_id,debt_date,debt_in,debt_out,debt_rest,outlet_id,member_name,member_mail,member_phone',
             item: item
  		}
- 		this.helper.$.ajax({
+ 		this.helper.loading_countdown({
  			url: url,
  			data:data,
  			type:"POST",
  			dataType:"json"
  		})
- 		.done( (res)=>{
+ 		.then( (res:any)=>{
+ 			loading.dismiss();
  			console.log(res)
  			switch (res.code) {
  				case 200:
@@ -444,15 +450,13 @@ import { HelperProvider } from '../../providers/helper/helper';
  					break;
  			}
  		} )
- 		.fail(()=>{
+ 		.catch(()=>{
+ 			loading.dismiss();
  			this.helper.alertCtrl.create({
 				title: "Terjadi kesalahan code:500",
 				message: "Fatal Error. Silahkan laporkan kepada pengembang aplikasi. ",
 				buttons: ["OK"]
 			}).present();
- 		})
- 		.always(()=>{
- 			loading.dismiss();
  		})
  	}
 

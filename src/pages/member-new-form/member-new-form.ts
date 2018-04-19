@@ -65,13 +65,14 @@ export class MemberNewFormPage {
 		load.present();
 
 		this.member.outlet_id = this.outlet;
-		this.helper.$.ajax({
+		this.helper.loading_countdown({
 			type: "POST",
 			url: this.helper.config.base_url('admin/outlet/member/add'),
 			data: this.member,
 			dataType: 'json'
 		})
-		.done((res)=>{
+		.then((res:any)=>{
+			load.dismiss();
 			console.log(res)
 
 			if(res.code == 200)
@@ -80,7 +81,7 @@ export class MemberNewFormPage {
 				this.viewController.dismiss({data:res.data})
 			}
 		})
-		.always(()=>{
+		.catch(()=>{
 			load.dismiss();
 		})
 	}
@@ -98,8 +99,9 @@ export class MemberNewFormPage {
 			data: this.member,
 			dataType: 'json'
 		})
-		.done((res)=>{
+		.then((res:any)=>{
 			console.log(res)
+			load.dismiss();
 
 			if(res.code == 200)
 			{
@@ -107,7 +109,7 @@ export class MemberNewFormPage {
 				this.navCtrl.setRoot(MemberPage);
 			}
 		})
-		.always(()=>{
+		.catch(()=>{
 			load.dismiss();
 		})
 	}

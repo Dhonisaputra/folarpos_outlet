@@ -143,8 +143,8 @@ export class PrintBluetoothPanelPage {
   get_printer_type()
   {
     let url = this.helper.config.base_url('admin/outlet/printer/type');
-    this.helper.$.post(url)
-    .done((res)=>{
+    this.helper.loading_countdown({url:url})
+    .then((res:any)=>{
       res = JSON.parse(res);
       this.data_printer_type = res.data;
     })

@@ -114,7 +114,7 @@ export class WaitersPage {
 			{
 				
 				billProvider.save(data)
-				.then((res)=>{
+				.then((res:any)=>{
 
 					res = !this.helper.isJSON(res)? res : JSON.parse(res);
 					if(res.code == 500)
@@ -289,8 +289,8 @@ export class WaitersPage {
     	let data = {
     		outlet_id: this.outlet
     	}
-    	this.helper.$.post(url, data)
-    	.done((res) => {
+    	this.helper.loading_countdown({url:url, data:data})
+    	.then((res:any) => {
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
     		if(res.code == 200)
     		{
@@ -493,7 +493,7 @@ export class WaitersPage {
 				payment_nominal: 0,
 			}
 		})
-		.then((res) => {
+		.then((res:any) => {
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
 			this.unpaid_bill_length = res.data.length
 		})
@@ -585,7 +585,7 @@ export class WaitersPage {
 			payment_method: 1,
 			payment_nominal: 0,
 		})
-		.done((res)=>{
+		.then((res:any)=>{
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
 			if(res.code == 200)
 			{
@@ -654,7 +654,7 @@ export class WaitersPage {
 								payment_method: 1,
 								payment_nominal: 0,
 							})
-							.done((res)=>{
+							.then((res:any)=>{
 								res = JSON.parse(res)
 								if(res.code == 200)
 								{
@@ -703,7 +703,7 @@ export class WaitersPage {
 				this.helper.local.set_params('temp_bill', this.billProvider.get_bill());
 
 				this.process_save_bill()
-				.done((res:any)=>{
+				.then((res:any)=>{
 					res = JSON.parse(res)
 					if(res.code == 200)
 					{

@@ -114,7 +114,7 @@ export class ProductPage
 			{
 				
 				billProvider.save(data)
-				.then((res)=>{
+				.then((res:any)=>{
 
 					res = !this.helper.isJSON(res)? res : JSON.parse(res);
 					if(res.code == 500)
@@ -191,6 +191,7 @@ export class ProductPage
     	})
 
     	this.helper.events.subscribe('transaction:refresh', (res)=>{
+    		console.log(res)
 			this.get_unpaid_bill();
     	})
 
@@ -277,8 +278,10 @@ export class ProductPage
     	let data = {
     		outlet_id: this.outlet
     	}
-    	this.helper.$.post(url, data)
-    	.done((res) => {
+    	this.helper.loading_countdown({
+    		url: url, data:data
+    	})
+    	.then((res:any) => {
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
     		if(res.code == 200)
     		{
@@ -308,49 +311,8 @@ export class ProductPage
 
 	refresh_data(refresher:any={}, options:any={duration:15000, reload: true})
 	{
-		let isFullyLoaded = false;
 		let variable = this.helper.local.get_params(this.helper.config.variable.credential);
-		let cti = options.duration||30000
-		let loader = this.loadingCtrl.create({
-	      	content: "Mengambil data. Silahkan tunggu! <span class='cti_scnds'> </span> detik",
-	      	duration: options.duration||30000,
-	    });
-
-		let ct = window.setInterval(()=>{
-			this.helper.$('.cti_scnds').text(cti/1000);
-			if(cti == 0)
-			{
-				window.clearInterval(ct)
-				
-			}
-			cti = cti - 1000;
-		}, 1000);
-	    loader.present();
-
-	    loader.onDidDismiss(()=>{
-				window.clearInterval(ct)
-	    	
-		    if(!isFullyLoaded)
-		    {
-		    	this.helper.alertCtrl.create({
-					title: "Gagal mengambil data.",
-					message: "Coba lagi?",
-					buttons: [{
-						text: "Tidak",
-						handler: ()=>{
-							loader.dismiss();
-						}
-					}, {
-						text: "Ya",
-						handler: ()=>{
-							options.duration = options.duration + 15000;
-							options.reload = false;
-							this.refresh_data(refresher, options)
-						}
-					}]
-				}).present();
-		    }	
-	    })
+		
 
 		let data:any = {outlet:this.outlet}
 		if(this.filter_sort_product != '')
@@ -398,13 +360,10 @@ export class ProductPage
 		{
 			this.get_product({data: data, online:true})
 			.then(()=>{
-				window.clearInterval(ct)
-				isFullyLoaded = true;
 				if(refresher.complete)
 				{
 					refresher.complete();
 				}
-				loader.dismiss();
 			})
 		}
 	}
@@ -457,7 +416,7 @@ export class ProductPage
 	
 	openSavedBill()
 	{
-		this.navCtrl.push(TransactionPage, {
+		this.navCtrl.setRoot(TransactionPage, {
 				body:{
 					where: {payment_nominal:0}
 				},
@@ -529,8 +488,10 @@ export class ProductPage
 				payment_cancel_status: 0,
 
 			}
+		}, {
+			onload_title: "memperbarui data order pending. "
 		})
-		.then((res) => {
+		.then((res:any) => {
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
 			this.unpaid_bill_length = res.data.length
 		})
@@ -622,7 +583,7 @@ export class ProductPage
 			payment_method: 1,
 			payment_nominal: 0,
 		})
-		.done((res)=>{
+		.then((res:any)=>{
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
 			if(res.code == 200)
 			{
@@ -691,7 +652,7 @@ export class ProductPage
 								payment_method: 1,
 								payment_nominal: 0,
 							})
-							.done((res)=>{
+							.then((res:any)=>{
 								res = JSON.parse(res)
 								if(res.code == 200)
 								{
@@ -740,7 +701,7 @@ export class ProductPage
 				this.helper.local.set_params('temp_bill', this.billProvider.get_bill());
 
 				this.process_save_bill()
-				.done((res:any)=>{
+				.then((res:any)=>{
 					res = JSON.parse(res)
 					if(res.code == 200)
 					{

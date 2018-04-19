@@ -13,13 +13,16 @@ export class ConfigProvider {
 	variable:any = {
 		credential: 'credential',
 		settings: 'settings'
-	} 
+	}
+	build_number:any;
 	constructor() {
-		this.host = 'http://instant.folarpos.co.id/';
+		// this.host = 'http://instant.folarpos.co.id/';
 		// this.host = 'http://localhost/folarpos-instant/';
-		// this.host = 'http://192.168.1.38/folarpos-instant/';
+		this.host = 'http://192.168.1.38/folarpos-instant/';
 		// this.host = 'http://192.168.0.104/folarpos-instant/';
 		// this.host = 'http://192.168.100.31/folarpos-instant/';
+
+		this.build_number = '20180419-1-1-44'
 	}
 
 	base_url(url:any)

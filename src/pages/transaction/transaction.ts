@@ -122,9 +122,11 @@ export class TransactionPage {
             this.transaction_params = data;
 
             let url = this.config.base_url('admin/outlet/transaction/get')
-            return $.post(url, data.data)
-            .done((res) => {
-
+            return this.helper.loading_countdown({url:url, data: data.data})
+            .then((res:any) => {
+                this.isSearch = true;
+                loadingData.dismiss();
+                
                 res = !this.helper.isJSON(res)? res : JSON.parse(res); 
                 if(res.code == 200)
                 {
@@ -154,7 +156,7 @@ export class TransactionPage {
                     reject();
                 }
             })
-            .fail(()=>{
+            .catch(()=>{
                 this.helper.alertCtrl.create({
                         title: "Gagal terhubung kedalam sistem",
                         buttons: ["Tutup", {
@@ -166,11 +168,6 @@ export class TransactionPage {
                     }).present();
                 reject();
             })
-            .always( ()=>{
-                this.isSearch = true;
-                loadingData.dismiss();
-                
-            } );
         });
 
     }
@@ -387,7 +384,8 @@ export class TransactionPage {
                   })
                   loading.present();
                 this.billProvider.cancel_bill(item.pay_id, data.cancel_note)
-                .then( (res) =>{
+                .then( (res:any) =>{
+                    loading.dismiss();
                     res = !this.helper.isJSON(res)? res : JSON.parse(res); 
                     if(res.code == 200)
                     {
@@ -398,12 +396,9 @@ export class TransactionPage {
                     }
 
                 } )
-                .fail( ()=>{
+                .catch( ()=>{
                     alertGagal.present();
                 } )
-                .always(() => {
-                    loading.dismiss();
-                })
 
               }
             }
@@ -421,6 +416,13 @@ export class TransactionPage {
               title: 'Opsi lanjutan...',
               buttons: [
                 {
+                  icon: 'logo-usd',
+                  text: 'Bayar pesanan',
+                  handler: () => {
+                      this.pay_transaction(index, item)
+                    // this.filter_transaction()
+                  }
+                },{
                   icon: 'ios-copy',
                   text: 'Gabungkan Nota',
                   handler: () => {

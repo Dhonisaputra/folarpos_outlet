@@ -208,8 +208,8 @@ export class TotalPaymentEditorPage {
   		outlet: this.outlet
   	}
     console.log(data)
-  	$.post(this.helper.config.base_url('admin/disc-manage/data/discount/active'), data)
-  	.done((res)=>{
+  	this.helper.loading_countdown({url:this.helper.config.base_url('admin/disc-manage/data/discount/active'), data:data})
+  	.then((res:any)=>{
         res = !this.helper.isJSON(res)? res : JSON.parse(res); 
         this.bill.discounts = res.data
   	})

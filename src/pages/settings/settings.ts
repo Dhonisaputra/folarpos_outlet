@@ -81,8 +81,8 @@ export class SettingsPage {
     let url = this.helper.config.base_url('sign/mobile_change_password')
 
     let users_id = this.helper.local.get_params(this.helper.config.variable.credential).users.users_id;
-    this.helper.$.post(url, {users_id: users_id, new_password: this.users.new_password, old_password: this.users.old_password })
-    .done((res)=>{
+    this.helper.loading_countdown({url: url, data: {users_id: users_id, new_password: this.users.new_password, old_password: this.users.old_password }})
+    .then((res:any)=>{
       res = JSON.parse(res);
       switch (res.code) {
         case 200:
@@ -118,7 +118,7 @@ export class SettingsPage {
        }
       
     })
-    .fail(()=>{
+    .catch(()=>{
       this.helper.alertCtrl.create({
             title: "Kesalahan Fatal",
             message: "System tidak dapat mengolah permintaan anda. Silahkan laporkan kepada pengembang sistem",

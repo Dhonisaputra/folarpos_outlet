@@ -144,7 +144,7 @@ export class PaymentPage {
 			payment_bank_charge_percent	: (this.payment_method == 3 || this.payment_method == 2) && this.helper.IDRtoInt( this.bill.payment_bank_charge_percent) > 0  ? this.helper.IDRtoInt( this.bill.payment_bank_charge_percent) : 0,
 			payment_method 				: this.bill.outlet_payment_method_id,
 		})
-		.done((res)=>{
+		.then((res:any)=>{
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
 			if(res.code == 200)
 			{
@@ -338,14 +338,14 @@ export class PaymentPage {
 		payment_bank_charge_percent	: (this.payment_method == 3 || this.payment_method == 2) && this.helper.IDRtoInt( this.bill.payment_bank_charge_percent) > 0  ? this.helper.IDRtoInt( this.bill.payment_bank_charge_percent) : 0,
 		payment_method 				: this.payment_method,
 	})
-	.done((res)=>{
+	.then((res:any)=>{
 		res = !this.helper.isJSON(res)? res : JSON.parse(res);
 		console.log(res)
 		if(res.code == 200)
 		{
 
 			this.bill = {}
-			this.helper.$.ajax({
+			this.helper.loading_countdown({
 				data:{
 					member_id: this.billProvider.bill.member_id,
 					debt_date: this.helper.moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -356,7 +356,7 @@ export class PaymentPage {
 				type: "POST",
 				url: this.helper.config.base_url('admin/outlet/debt/save')
 			})
-			.done((res)=>{
+			.then((res:any)=>{
 				this.helper.alertCtrl.create({
 					title: "Proses sukses",
 					message: "Hutang telah ditambahkan",

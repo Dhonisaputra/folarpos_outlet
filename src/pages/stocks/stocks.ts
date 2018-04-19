@@ -58,13 +58,8 @@ export class StocksPage {
 
   get_ingredient_data()
     {
-        // serv_id
-        let loading = this.helper.loadingCtrl.create({
-            content: "Memeriksa data"
-        })
-        loading.present();
         let url = this.helper.config.base_url('admin/outlet/ingredient/get');
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
             url: url,
             type: 'POST',
             data: { 
@@ -79,14 +74,13 @@ export class StocksPage {
             },
             dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
             if(res.code == 200)
             {
                 this.ingredients = res.data;
             }
         })
-        .always(()=>{
-            loading.dismiss();
+        .catch(()=>{
         })
     }
 

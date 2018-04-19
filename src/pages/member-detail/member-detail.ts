@@ -50,16 +50,17 @@ import { HelperProvider } from '../../providers/helper/helper';
         	content: "Memeriksa data"
         })
         load.present();
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
         	url: url,
         	data: params,
         	type: 'POST',
         	dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            load.dismiss();
         	this.transaction = res.data
         })
-        .always(()=>{
+        .catch(()=>{
         	load.dismiss();
         })
  	}

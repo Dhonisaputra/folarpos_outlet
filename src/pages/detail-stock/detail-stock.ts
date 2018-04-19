@@ -73,18 +73,15 @@ import * as $ from "jquery"
         {
             data_request.ingd = this.product.ingd_id
         }
-        let stockPile = this.helper.loadingCtrl.create({
-            content: "Mengambil data stock"
-        });
-        stockPile.present();
-        $.post(url, data_request)
-        .then((res)=>{
+        
+        this.helper.loading_countdown({url:url, data:data_request}, {onload_title: "Mengambil data stock"})
+        .then((res:any)=>{
             res = this.helper.isJSON(res)? JSON.parse(res):res;
             this.log_stock = res.data;
             let stock = this.log_stock[0]?this.log_stock[0].stock_rest : 0;
             this.product.stock_opname = this.product.stock < 1? this.product.stock - this.log_stock[0].stock_rest : stock;
         })
-        .fail(()=>{
+        .catch(()=>{
             this.helper.alertCtrl.create({
                 message: "Tidak terdapat terhubung kedalam sistem.",
                 buttons: ["Tutup", {
@@ -95,16 +92,13 @@ import * as $ from "jquery"
                 }]
             })
         })
-        .always(()=>{
-            stockPile.dismiss();
-        })
     }
 
     process_get_linked_product()
     {
         let url = this.helper.config.base_url('admin/outlet/ingredient/related_product')
-        $.post(url, {outlet_id: this.outlet, ingredients: [this.product.ingd_id] })
-        .then((res)=>{
+        this.helper.loading_countdown({url:url, data:{outlet_id: this.outlet, ingredients: [this.product.ingd_id] } })
+        .then((res:any)=>{
             res = this.helper.isJSON(res)? JSON.parse(res):res;
             console.log(res)
         })

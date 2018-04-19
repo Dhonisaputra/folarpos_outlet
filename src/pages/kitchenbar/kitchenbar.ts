@@ -141,9 +141,9 @@ export class KitchenbarPage {
                             message: "Status pesanan berhasil diubah menjadi proses",
                             duration: 2000
                         }).present()
-                        var nota = this.helper.outlet_initial_name()+'/NOTA/'+this.helper.lead_zero(item.pay_id, 5);
+                        /*var nota = this.helper.outlet_initial_name()+'/NOTA/'+this.helper.lead_zero(item.pay_id, 5);
                         this.helper.airemote.send(this.outlet+'.waiters:proses-done','',{title: "Pesanan nota "+nota+' telah diproses' }, () => {
-                        })
+                        })*/
                         break;
 
                     case 1:
@@ -237,7 +237,7 @@ export class KitchenbarPage {
                 pay_dt_date_now   : this.helper.moment('YYYY-MM-DD')
             },
             in       : [['pay_dt_order_status', included_data]],
-            join     : ["md_prod_type","tr_payment","mg_member"],
+            join     : ["md_prod_type","tr_payment","mg_member","md_tables"],
             group_by : "pay_id,pay_dt_order_session",
             order_by : "date ASC",
         }
@@ -540,7 +540,8 @@ export class KitchenbarPage {
                   })
                   loading.present();
                 this.billProvider.cancel_bill(item.pay_id, data.cancel_note)
-                .then( (res) =>{
+                .then( (res:any) =>{
+                    loading.dismiss();
                     res = !this.helper.isJSON(res)? res : JSON.parse(res); 
                     if(res.code == 200)
                     {
@@ -551,12 +552,10 @@ export class KitchenbarPage {
                     }
 
                 } )
-                .fail( ()=>{
+                .catch( ()=>{
+                    loading.dismiss();
                     alertGagal.present();
                 } )
-                .always(() => {
-                    loading.dismiss();
-                })
 
               }
             }
