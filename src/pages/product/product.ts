@@ -479,6 +479,25 @@ export class ProductPage
 
 	get_unpaid_bill()
 	{
+
+		this.helper.events.subscribe('categories', (res)=>{
+			switch (res.status) {
+				case 2:
+				this.helper.events.unsubscribe('categories');
+					// code...
+					break;
+				case 1:
+					console.log('load success..')
+
+					break;
+				
+				case 0:
+				default:
+					console.log('load error..')
+					// code...
+					break;
+			}
+		})
 		return this.billProvider.get_unpaid_bill({
 			outlet: this.outlet,
 			fields: 'payment_nominal,outlet,pay_id,payment_date_only,payment_cancel_status',

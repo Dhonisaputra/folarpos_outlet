@@ -64,14 +64,18 @@
           <button menuClose ion-item (click)="setRoot(debtPage)" *ngIf="helper.local.get_params(helper.config.variable.settings) && helper.local.get_params(helper.config.variable.settings).debt_mode">
             <img src="assets/imgs/icons/debt.png" style="width:25px; height: 25px;"> Hutang
           </button>
+
+          <button menuClose ion-item (click)="setRoot(reportPage)">
+            <img src="assets/imgs/icons/report.png" style="width:25px; height: 25px;"> Laporan
+          </button>
           <button menuClose ion-item (click)="setRoot(settingsPage)">
             <img src="assets/imgs/icons/settings.png" style="width:25px; height: 25px;"> Settings
           </button>
         </div>
         
-          <button menuClose ion-item (click)="setRoot(kitchenbarPage)">
+        <button menuClose ion-item (click)="setRoot(kitchenbarPage)">
           <img src="assets/imgs/icons/realtime.png" style="width:25px; height: 25px;"> Monitoring order
-      </button>
+        </button>
         <button menuClose ion-item (click)="setRoot(printerPage)">
           <img src="assets/imgs/icons/printer.png" style="width:25px; height: 25px;"> Printer
         </button>

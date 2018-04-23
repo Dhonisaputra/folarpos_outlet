@@ -3,8 +3,6 @@ import { IonicPage, NavController, NavParams, ViewController, AlertController  }
 import { BillProvider } from '../../providers/bill/bill';
 import { ReceiptPage } from '../receipt/receipt';
 import { ProductPage } from '../product/product';
-import { HelperProvider } from '../../providers/helper/helper'; 
-import * as $ from "jquery"
 
 /**
  * Generated class for the EditReceiptItemPage page.
@@ -25,9 +23,9 @@ export class EditReceiptItemPage {
   isChange:boolean=false;
   isUpdated:boolean=false;
 
-  constructor( public helper : HelperProvider, public viewCtrl: ViewController, public navCtrl: NavController, public navParams: NavParams, public billProvider:BillProvider, private alertCtrl: AlertController) {
+  constructor(public viewCtrl: ViewController, public navCtrl: NavController, public navParams: NavParams, public billProvider:BillProvider, private alertCtrl: AlertController) {
     this.item = {}
-    
+
   }
 
   ionViewDidLoad() {
@@ -48,10 +46,10 @@ export class EditReceiptItemPage {
 
   closeModal()
   {
-    this.helper.play('audio');
+    this.billProvider.helper.play('audio');
     if(this.isChange)
     {
-      this.helper.alertCtrl.create({
+      this.billProvider.helper.alertCtrl.create({
         title: "Anda telah mengubah data, apakah anda ingin keluar?",
         subTitle: "Data anda tidak akan tersimpan.",
         buttons: [{
@@ -71,7 +69,7 @@ export class EditReceiptItemPage {
   }
   cancelUpdate()
   {
-      this.helper.play('audio');
+      this.billProvider.helper.play('audio');
     console.log(this.itemTemp)
     this.billProvider.set_order(this.navParams.data.index, this.itemTemp);
     this.billProvider.update_bill()
@@ -89,7 +87,7 @@ export class EditReceiptItemPage {
     if(val >= 99 && el.target)
     {
       val = 99;
-      $(el.target).val(val)
+      this.billProvider.helper.$(el.target).val(val)
       this.item.discount_percent = val;
     }
 
@@ -114,7 +112,7 @@ export class EditReceiptItemPage {
     if(val >= product_price && el.target)
     {
       val = product_price;
-      $(el.target).val(val)
+      this.billProvider.helper.$(el.target).val(val)
       this.item.discount_nominal = val;
     }
 
@@ -144,7 +142,7 @@ export class EditReceiptItemPage {
 
   changeComplementItems(type:string='input', el:any={})
   {
-      this.helper.play('audio');
+      this.billProvider.helper.play('audio');
     this.isChange = true;
     let qty;
     switch (type) {
@@ -154,7 +152,7 @@ export class EditReceiptItemPage {
 
         if(this.item.complement_item >= qty && el.target)
         {  
-          $(el.target).val(complement_item)
+          this.billProvider.helper.$(el.target).val(complement_item)
           this.item.complement_item = complement_item;
         }  
 
@@ -232,7 +230,7 @@ export class EditReceiptItemPage {
 
   reduceItem()
   {
-      this.helper.play('audio');
+      this.billProvider.helper.play('audio');
     this.isChange = true;
     var dataitem = this.billProvider.get_order(this.item.index);
     if(dataitem.qty <= 1)
@@ -250,7 +248,7 @@ export class EditReceiptItemPage {
   }
   addItem()
   {
-    this.helper.play('audio');
+    this.billProvider.helper.play('audio');
     this.isChange = true;
     var dataitem = this.billProvider.get_order(this.item.index);
     this.item.qty = parseInt(this.item.qty) + 1

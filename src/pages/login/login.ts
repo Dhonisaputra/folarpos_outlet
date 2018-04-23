@@ -59,10 +59,7 @@ export class LoginPage {
 
 	check_credential()
 	{
-			let loader = this.helper.loadingCtrl.create({
-				content: 'Melakukan pengecheckan pengguna. Silahkan tunggu..'
-			})
-			loader.present();
+			
 			let deff = this.helper.$.Deferred();
 
 			let url = this.helper.config.base_url('apps/apk/version/latest')+'?mobile';
@@ -73,7 +70,6 @@ export class LoginPage {
 				{
 					if(res.data.apk_version_build != this.helper.config.build_number)
 					{
-						loader.dismiss();
 						if(res.data.force_update == 1)
 						{
 							deff.reject(true)
@@ -129,7 +125,6 @@ export class LoginPage {
 					if(!val || !val.outlet)
 					{
 						this.helper.local.set_params('is_login', false);
-						loader.dismiss();
 
 					}else
 					{
@@ -142,7 +137,6 @@ export class LoginPage {
 							this.helper.local.set_params(this.helper.config.variable.settings, resSettings);
 							let default_page = resSettings && !resSettings.choose_table_first?  ProductPage : TablePage ;
 							this.navCtrl.setRoot(OutletListPage);
-							loader.dismiss();
 						})
 
 

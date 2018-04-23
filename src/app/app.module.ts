@@ -39,6 +39,8 @@ import { SpendDetailPage } from '../pages/spend-detail/spend-detail';
 import { DebtPage } from '../pages/debt/debt';
 import { WaitersPage } from '../pages/waiters/waiters';
 import { KitchenbarPage } from '../pages/kitchenbar/kitchenbar';
+import { LoadingPage } from '../pages/loading/loading';
+import { ReportPage } from '../pages/report/report';
 
 import { OutletListPageModule } from '../pages/outlet-list/outlet-list.module';
 import { PrintBluetoothPanelPageModule } from '../pages/print-bluetooth-panel/print-bluetooth-panel.module';
@@ -94,7 +96,9 @@ import { BackgroundMode } from '@ionic-native/background-mode';
     SpendDetailPage,
     DebtPage,
     WaitersPage,
-    KitchenbarPage
+    KitchenbarPage,
+    LoadingPage,
+    ReportPage
     // AbsoluteDragDirective
 
   ],
@@ -137,7 +141,9 @@ import { BackgroundMode } from '@ionic-native/background-mode';
     SpendDetailPage,
     DebtPage,
     WaitersPage,
-    KitchenbarPage
+    KitchenbarPage,
+    LoadingPage,
+    ReportPage
     
 
   ],

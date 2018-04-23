@@ -103,11 +103,7 @@ export class AiRemoteProvider {
     }
     default_params()
     {
-        return {
-            host:'https://folariumremote.herokuapp.com/',
-            apiKey:'instantFolar3030' ,
-            id:undefined
-        }
+        return this.config.remote_host_default();
     }
     subscribe(event, fn)
     {	

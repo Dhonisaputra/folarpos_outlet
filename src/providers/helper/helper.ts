@@ -72,33 +72,41 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 
       get_uuid()
       {
-        this.storage.get(this.config.variable.credential)
-        .then((val) => {
-            if(!this.platform.is('cordova'))
-            {
-                this.storage.get('uuid')
-                .then((uuid:any) => {
-                    if(!uuid)
-                    {
-                        this.uuid = val.outlet.outlet_id+'-'+this.moment().valueOf()+'-'+val.users.users_id;
-                        this.storage.set('uuid', this.uuid);
-                    }else
-                    {
-                        this.uuid = uuid;
+        return new Promise((resolve, reject)=>{
+
+
+            this.storage.get(this.config.variable.credential)
+            .then((val) => {
+                if(!this.platform.is('cordova'))
+                {
+                    this.storage.get('uuid')
+                    .then((uuid:any) => {
+                        if(!uuid)
+                        {
+                            this.uuid = val.outlet.outlet_id+'-'+this.moment().valueOf()+'-'+val.users.users_id;
+                            this.storage.set('uuid', this.uuid);
+                        }else
+                        {
+                            this.uuid = uuid;
+                            this.local.set_params('uuid', this.uuid)
+                        }
+                        resolve(uuid);
+                    })
+                }else
+                {
+                    this.uniqueDeviceID.get()
+                    .then((uuid: any)=>{
+
+                        this.uuid = uuid? uuid: val.outlet.outlet_id+'-'+this.moment().valueOf()+'-'+val.users.users_id;
                         this.local.set_params('uuid', this.uuid)
-                    }
-                })
-            }else
-            {
-                this.uniqueDeviceID.get()
-                .then((uuid: any)=>{
 
-                    this.uuid = uuid? uuid: val.outlet.outlet_id+'-'+this.moment().valueOf()+'-'+val.users.users_id;
-                    this.local.set_params('uuid', this.uuid)
+                        resolve(uuid);
+                    });
+                }
+            })
 
-                });
-            }
         })
+
       }
 
       uniqid()
@@ -184,10 +192,17 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 
                let aj = this.$.ajax(ajax)
               .done((res)=>{
+                  console.log(res)
                   loader.dismiss();
                   window.clearInterval(ct)
                   isFullyLoaded = true;
                   resolve(res);
+              })
+              .fail((res)=>{
+                  loader.dismiss();
+                  window.clearInterval(ct)
+                  isFullyLoaded = true;
+                  reject(res)
               })
 
               loader.onDidDismiss(()=>{
@@ -245,7 +260,53 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
               })*/
         });
           
-      }
+    }
+
+    /*
+    @params
+        - target = array
+    */
+    chaining_loading(target:any=[], options:any={})
+    {
+        options = Object.assign({
+            name: "default"
+        }, options)
+        var len = target.length;
+        var index = 0;
+        var results:any = []
+
+        var loading = (target_each)=>{
+            return new Promise((resolve, reject)=>{
+                this.loading_countdown(target_each)
+                .then((res:any)=>{
+                    res = this.isJSON(res)? JSON.parse(res):res;
+                    var id = target[index]['id'] || 'chaining-'+index;
+                    let res_ev = {id: id, status:1,results: res, ajax: target[index], index: index };
+                    results.push(res_ev);
+                    this.events.publish(options.name, res_ev)
+                    
+                    if(index == len -1)
+                    {
+                        this.events.publish(options.name, {status:2, results: results})
+                    }
+                    index = index + 1;
+                    if(index < len)
+                    {
+                        loading(target[index])
+                    }
+                    resolve(res);
+                })
+                .catch((res)=>{
+                     var id = target[index]['id'] || 'chining-'+index;
+                    let res_ev = {id: id, status:1,results: res, ajax: target[index], index: index };
+                    this.events.publish(options.name,res_ev)
+                    reject();
+                })
+            })
+        }
+
+        loading(target[index])
+    }
 
   /*
     Source
@@ -264,6 +325,8 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
         return rev2.split('').reverse().join('');
 
     }
+
+
 
     nativeWindow()
     {
@@ -336,6 +399,11 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
     {
         let outletName = this.local.get_params(this.config.variable.credential).outlet.outlet_name? this.local.get_params(this.config.variable.credential).outlet.outlet_name : 'OUTLET';
         return this.get_initial_outlet_name(outletName, '.');
+    }
+
+    outlet_active()
+    {
+        return this.local.get_params(this.config.variable.credential).outlet.outlet_id;
     }
 
   // audio

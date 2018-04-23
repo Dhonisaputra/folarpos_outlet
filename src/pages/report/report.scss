@@ -1,0 +1,11 @@
+page-report {
+	.reports-box
+	{
+		width: 50%;
+		border-left: 1px solid #eee;
+		border-right: 1px solid #eee;
+		height: 100vh;
+		overflow-y: auto;
+		margin: auto;
+	}
+}

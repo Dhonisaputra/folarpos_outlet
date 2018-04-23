@@ -145,6 +145,7 @@ export class PaymentPage {
 			payment_method 				: this.bill.outlet_payment_method_id,
 		})
 		.then((res:any)=>{
+			console.log(res)
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
 			if(res.code == 200)
 			{
