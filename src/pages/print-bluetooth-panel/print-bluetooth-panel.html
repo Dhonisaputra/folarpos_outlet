@@ -29,25 +29,47 @@
 <ion-content padding>
 	<ion-grid>
 		<ion-row>
-			<ion-col col-4>
+			<ion-col col-md-4 col-12 *ngIf="form_status">
 
 				<ion-list>
-					<ion-item></ion-item>
 					<ion-item>
-					  	<ion-label> Using Bluetooth</ion-label>
-					  	<ion-toggle checked="false"></ion-toggle>
+					  	<ion-label>  
+				  			<ion-icon color="primary" ios="ios-wifi" md="ios-wifi" *ngIf="data_printer.outlet_printer_connect_with == 'wifi'"></ion-icon>
+				  			<ion-icon color="primary" ios="ios-bluetooth" md="ios-bluetooth" *ngIf="data_printer.outlet_printer_connect_with == 'bluetooth'"></ion-icon>
+					  		&nbsp;Printer {{data_printer.outlet_printer_connect_with}} 
+					  	</ion-label>
+					  	<ion-toggle checked="false" [(ngModel)]="printer_connection" (ionChange)="search_bluetooth_printer($event)"></ion-toggle>
 					</ion-item>
 					<ion-item>
-						<ion-label floating>Alamat printer</ion-label>
-						<ion-input type="text"></ion-input>
+						<ion-label stacked>Alamat printer</ion-label>
+						<ion-input type="text" [(ngModel)]="data_printer.outlet_printer_address"></ion-input>
+					</ion-item>
+
+					<ion-item>
+						<ion-label stacked>Printer name</ion-label>
+						<ion-input type="text" [(ngModel)]="data_printer.outlet_printer_name"></ion-input>
 					</ion-item>
 
 					<ion-item>
-						<ion-label floating>Password</ion-label>
-						<ion-input type="password"></ion-input>
+						<ion-label stacked>printer type </ion-label>
+						<ion-select [(ngModel)]="data_printer.print_type" style="display:flex; justify-content: space-between;">
+					      <ion-option *ngFor="let item of data_printer_type" value="{{item}}">Printer {{item}}</ion-option>
+					    </ion-select>
 					</ion-item>
 
+					<ion-item>
+						<button ion-button full (tap)="savePrinter()">Save Printer</button>
+					</ion-item>
 				</ion-list>
+			</ion-col>
+			<ion-col col-md-8 col-12 *ngIf="data_status">
+				<div *ngFor="let item of printer_list">
+				  	<button ion-item icon-left>
+						<ion-icon ios="ios-bluetooth" md="md-bluetooth" *ngIf="item.outlet_printer_connect_with == 'bluetooth'"></ion-icon>
+						<ion-icon ios="ios-wifi" md="ios-wifi" *ngIf="item.outlet_printer_connect_with == 'wifi'"></ion-icon>
+				    	{{ item.outlet_printer_name }} <span class="bs-badge pull-right">{{item.outlet_printer_address}}</span>
+				  	</button>  
+			  	</div>
 			</ion-col>
 
 		</ion-row>
@@ -70,5 +92,7 @@
 		    	{{ item.aliasName }}
 		  	</button>  
 	  	</div>
+
+	  	
 	</ion-list>
 </ion-content>

@@ -420,7 +420,7 @@ export class TransactionPage {
             this.actionSheetCtrl.create({
               title: 'Opsi lanjutan...',
               buttons: [
-                {
+                /*{
                   icon: 'ios-copy',
                   text: 'Gabungkan Nota',
                   handler: () => {
@@ -431,7 +431,7 @@ export class TransactionPage {
                       }).present();
                     // this.filter_transaction()
                   }
-                },{
+                },*/{
                     icon: "ios-cut",
                   text: 'Pisahkan Nota',
                   handler: () => {

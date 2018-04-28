@@ -217,6 +217,8 @@ export class KitchenbarPage {
                     buttons: []
                 }).present()
             }
+
+            return res;
         });
     }
 
@@ -325,10 +327,10 @@ export class KitchenbarPage {
             this.transaction_params.data.order_by = this.order_by;
 
             this.get_transaction(this.transaction_params)
-            .done((res)=>{
+            .then((res)=>{
                 resolve(res)
             })
-            .fail(()=>{
+            .catch(()=>{
                 reject();
             })
 
