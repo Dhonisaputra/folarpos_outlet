@@ -274,9 +274,9 @@ export class ReceiptPage {
 			return false
 		}
 		item.index = index;
-		let modal = this.modalCtrl.create(EditReceiptItemPage, item)
+		let modal = this.navCtrl.push(EditReceiptItemPage, item)
 		// let modal = this.modalCtrl.create(EditReceiptItemPage, item)
-		modal.present();
+		// modal.present();
 		// modal.onDidDismiss(data => {
 			// this.trigger_update_receipt();
 	   // });
@@ -360,6 +360,34 @@ export class ReceiptPage {
 					text: 'Pilih Member',
 					handler: () => {
 						this.openFormDataMember()
+					}
+				}
+			]
+		}).present()
+	}
+
+	table_options()
+	{
+		let visitor_name =  this.bill.visitor_name;
+		this.helper.actionSheet.create({
+			title: 'Opsi lanjutan...',
+			buttons: [
+				{
+					text: 'Ganti meja',
+					handler: () => {
+						this.change_table()
+					}
+				},{
+					text: 'Ganti menjadi bungkus',
+					handler: () => {
+						this.bill.table_name = "Bungkus";
+						this.update_receipt();
+					}
+				},{
+					text: 'Hapus meja',
+					handler: () => {
+						this.bill.table_name = "";
+						this.update_receipt();
 					}
 				}
 			]

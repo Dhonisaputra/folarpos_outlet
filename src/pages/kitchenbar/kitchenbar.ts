@@ -116,6 +116,55 @@ export class KitchenbarPage {
         this.helper.events.unsubscribe('monitoring_request:refresh')
     }
 
+    changeProsesForSelectedItem(item)
+    {
+        let url = this.config.base_url('admin/outlet/transaction/order/update');
+        let data = {
+            update:{
+                pay_dt_order_status: item.pay_dt_order_status == 0? 1 : (item.pay_dt_order_status == 1? 2 : 3),
+            },
+            in: [['pay_dt_id', item.selected_item]],
+            where: {
+                pay_id: item.pay_id,
+                order_session: item.order_session,
+            }
+        }
+        this.helper.$.post(url, data)
+        .done((res)=>{
+            res = JSON.parse(res)
+            if(res.code == 200)
+            {
+                this.filter_transaction();
+                switch (parseInt(item.pay_dt_order_status)) {
+                    case 0:
+                        this.helper.toast.create({
+                            message: "Status pesanan berhasil diubah menjadi proses",
+                            duration: 2000
+                        }).present()
+                        /*var nota = this.helper.outlet_initial_name()+'/NOTA/'+this.helper.lead_zero(item.pay_id, 5);
+                        this.helper.airemote.send(this.outlet+'.waiters:proses-done','',{title: "Pesanan nota "+nota+' telah diproses' }, () => {
+                        })*/
+                        break;
+
+                    case 1:
+                        this.helper.toast.create({
+                            message: "Status pesanan berhasil diselesaikan",
+                            duration: 4000
+                        }).present()
+                        var nota = this.helper.outlet_initial_name()+'/NOTA/'+this.helper.lead_zero(item.pay_id, 5);
+                        this.helper.airemote.send(this.outlet+'.waiters:proses-done','',{title: "Pesanan nota "+nota+' telah selesai' }, () => {
+
+                        })
+                        break;
+                    
+                    default:
+                        // code...
+                        break;
+                }
+            }
+        })
+    }
+
     changeProses(item)
     {
         let url = this.config.base_url('admin/outlet/transaction/order/update');
@@ -188,7 +237,7 @@ export class KitchenbarPage {
                 pay_dt_date_now   : this.helper.moment('YYYY-MM-DD')
             },
             in       : [['pay_dt_order_status', included_data]],
-            join     : ["md_prod_type","tr_payment","mg_member"],
+            join     : ["md_prod_type","tr_payment","mg_member","md_tables"],
             group_by : "pay_id,pay_dt_order_session",
             order_by : "date ASC",
         }
@@ -327,7 +376,11 @@ export class KitchenbarPage {
             this.transaction_params.data.order_by = this.order_by;
 
             this.get_transaction(this.transaction_params)
+<<<<<<< HEAD
             .then((res)=>{
+=======
+            .then((res:any)=>{
+>>>>>>> e5b010e0726340a49feb899b2f467dd91ba40965
                 resolve(res)
             })
             .catch(()=>{
@@ -335,6 +388,66 @@ export class KitchenbarPage {
             })
 
         })
+    }
+
+    itemWantToProcess(item)
+    {
+        let id = item.group_pay_dt_id.split(',');
+        let name = item.group_prod_name.split(',');
+        let data = [];
+        this.helper.$.each(item.orders, (i, val)=>{
+
+            data[i] = {
+                value: parseInt(val.pay_dt_id),
+                label: val.prod_name,
+                type: 'checkbox',
+                checked: true
+            }
+        })
+
+
+        this.helper.alertCtrl.create({
+            title: "Daftar order",
+            message: "Silahkan pilih order yang akan diproses",
+            inputs: data,
+            buttons:[{
+                text: "Proses order terpilih",
+                cssClass: 'btn-primary',
+                handler: (res)=>{
+                    item.selected_item = res
+                    this.changeProsesForSelectedItem(item)
+                }
+            },"Tutup"]
+        }).present();
+    }
+    itemWantToNextProcess(item)
+    {
+        let data = [];
+        this.helper.$.each(item.orders_process, (i, val)=>{
+
+            data[i] = {
+                value: parseInt(val.pay_dt_id),
+                label: val.prod_name,
+                type: 'checkbox',
+                checked: true
+            }
+        })
+
+
+        this.helper.alertCtrl.create({
+            title: "Daftar order",
+            message: "Pilih order yang akan tandai selesai",
+            inputs: data,
+            buttons:[{
+                text: "Proses order terpilih",
+                cssClass: 'btn-primary',
+                handler: (res)=>{
+                    item.selected_item = res
+                    item.pay_dt_order_status = 1
+                    this.changeProsesForSelectedItem(item)
+                }
+            },"Tutup"]
+        }).present();
     }
 
     edit_transaction(i, item)
@@ -433,7 +546,8 @@ export class KitchenbarPage {
                   })
                   loading.present();
                 this.billProvider.cancel_bill(item.pay_id, data.cancel_note)
-                .then( (res) =>{
+                .then( (res:any) =>{
+                    loading.dismiss();
                     res = !this.helper.isJSON(res)? res : JSON.parse(res); 
                     if(res.code == 200)
                     {
@@ -444,12 +558,10 @@ export class KitchenbarPage {
                     }
 
                 } )
-                .fail( ()=>{
+                .catch( ()=>{
+                    loading.dismiss();
                     alertGagal.present();
                 } )
-                .always(() => {
-                    loading.dismiss();
-                })
 
               }
             }

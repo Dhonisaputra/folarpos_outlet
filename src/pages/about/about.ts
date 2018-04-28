@@ -24,7 +24,7 @@ export class AboutPage {
   		value: this.helper.local.get_params('uuid')
   	},{
   		name: 'version',
-  		value: 'build 20180321-1-20'
+  		value: 'build'+this.helper.config.build_number
   	},{
   		name: 'Author',
   		value: 'dhoni.p.saputra@gmail.com'

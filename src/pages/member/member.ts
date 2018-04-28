@@ -45,7 +45,7 @@ export class MemberPage {
 			content: "Memeriksa data"
 		})
 		load.present();
-		this.helper.$.ajax({
+		this.helper.loading_countdown({
 			type: "POST",
 			url: this.helper.config.base_url('admin/outlet/member/get'),
 			data: {
@@ -55,11 +55,12 @@ export class MemberPage {
 			},
 			dataType: 'json'
 		})
-		.done((res)=>{
+		.then((res:any)=>{
 
+			load.dismiss();
 			this.member = res.data
 		})
-		.always( ()=>{
+		.catch( ()=>{
 			load.dismiss();
 		} )
 	}
@@ -70,7 +71,7 @@ export class MemberPage {
 			content: "Memeriksa data"
 		})
 		load.present();
-		this.helper.$.ajax({
+		this.helper.loading_countdown({
 			type: "POST",
 			url: this.helper.config.base_url('admin/outlet/member/get'),
 			data: {
@@ -79,15 +80,16 @@ export class MemberPage {
 			},
 			dataType: 'json'
 		})
-		.done((res)=>{
+		.then((res:any)=>{
 
+			load.dismiss();
 			this.member = res.data
 			if(typeof $event.complete == 'function')
 			{
 				$event.complete();
 			}
 		})
-		.always( ()=>{
+		.catch( ()=>{
 			load.dismiss();
 		} )
 	}
@@ -104,7 +106,7 @@ export class MemberPage {
 			content: "menghapus member"
 		})
 		load.present();
-		this.helper.$.ajax({
+		this.helper.loading_countdown({
 			type: "POST",
 			url: this.helper.config.base_url('admin/outlet/member/delete'),
 			data: {
@@ -113,7 +115,7 @@ export class MemberPage {
 			},
 			dataType: 'json'
 		})
-		.done((res)=>{
+		.then((res:any)=>{
 
 			// this.member = res.data
 			if(res.code == 200)
@@ -139,7 +141,8 @@ export class MemberPage {
 			}
 
 		})
-		.fail(()=>{
+		.catch(()=>{
+			load.dismiss();
 			this.helper.alertCtrl.create({
 				title: "Terdapat kesalah",
 				message: "Member gagal dihapus",
@@ -151,9 +154,6 @@ export class MemberPage {
 				}]
 			}).present();
 		})
-		.always( ()=>{
-			load.dismiss();
-		} )
 	}
 	update_new_member()
 	{
@@ -243,28 +243,25 @@ export class MemberPage {
 					content: "Mengirimkan email"
 				});
 				loading.present();
-				this.helper.$.ajax({
+				this.helper.loading_countdown({
 					url:url,
 					type:"POST",
 				})
-				.done((res)=>{
+				.then((res:any)=>{
+					loading.dismiss();
 					this.helper.alertCtrl.create({
 						title: "Kartu member terkirim",
 						message: "Kartu member berhasil dikirim",
 						buttons: ["OK"]
 					}).present()
 				})
-				.fail(()=>{
+				.catch(()=>{
+					loading.dismiss();
 					this.helper.alertCtrl.create({
 						title: "Kesalahan code : 500",
 						message: "Terjadi kesalahan saat mengirimkan email. Silahkan laporkan kepada pengembang aplikasi",
 						buttons: ["OK"]
 					}).present()
-				})
-
-				.always(()=>{
-					
-					loading.dismiss();
 				})
 				break;
 			

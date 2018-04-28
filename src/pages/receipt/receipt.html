@@ -13,7 +13,7 @@
 			</div>
 			<ion-row class="receipt-headinput">
 				<ion-col col-5>
-					<input type="text" name="" class="text-align--center form-control form-receipt--border-bottom form-receipt--table"  placeholder="Nomor Meja" [disabled]="can_edit_table" [(ngModel)]="bill.table_name" (input)="update_receipt()" (click)="change_table()">
+					<input type="text" name="" class="text-align--center form-control form-receipt--border-bottom form-receipt--table"  placeholder="Nomor Meja" [disabled]="can_edit_table" [(ngModel)]="bill.table_name" (input)="update_receipt()" (press)="table_options()" (click)="change_table()">
 				</ion-col>
 				<ion-col col-2></ion-col>
 				<ion-col col-5>
@@ -111,7 +111,7 @@
 					</tr>
 
 					<tr >
-						<td style="width: 20%;padding-top: 10px;font-size: 1.3em;" >{{get_orders().length}} item</td>
+						<td style="width: 20%;padding-top: 10px;font-size: 1.3em;" ></td>
 						<td style="width: 48%; padding-top: 10px; font-size: 1.3em;" class="text-align--right">Total</td>
 						<td style="width: 5%; padding-top: 10px; font-size: 1.3em;" class="text-align--right"><span class="">Rp.</span> </td>
 						<td style="width: 10%; padding-top: 10px; font-size: 1.3em;" class="text-align--right"><span>{{billProvider.helper.intToIDR(billProvider.get_bill_component('payment_total'))}} </span> </td>

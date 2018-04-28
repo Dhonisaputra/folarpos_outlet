@@ -98,7 +98,11 @@ export class SpendPage {
     refresh_data($event)
     {
         this.get_data_spend()
-        .always(()=>{
+        .then(()=>{
+            $event.complete();
+        })
+        .catch(()=>{
+            
             $event.complete();
         })
     }
@@ -129,7 +133,7 @@ export class SpendPage {
         })
         loading.present();
         let url = this.helper.config.base_url('admin/outlet/ingredient/get');
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
             url: url,
             type: 'POST',
             data: { 
@@ -144,7 +148,8 @@ export class SpendPage {
             },
             dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            loading.dismiss();
             if(res.code == 200)
             {
                 this.ingredients = res.data;
@@ -161,7 +166,8 @@ export class SpendPage {
                 }).present();
             }
         })
-        .fail(()=>{
+        .catch(()=>{
+            loading.dismiss();
             this.helper.alertCtrl.create({
                 message: "Tidak dapat mengambil data",
                 buttons: ["Tutup", {
@@ -171,9 +177,6 @@ export class SpendPage {
                     }
                 }]
             }).present();
-        })
-        .always(()=>{
-            loading.dismiss();
         })
     }
 
@@ -202,7 +205,7 @@ export class SpendPage {
         })
         loading.present();
         let url = this.helper.config.base_url('admin/outlet/spend/get');
-        return this.helper.$.ajax({
+        return this.helper.loading_countdown({
             url: url,
             type: 'POST',
             data: { 
@@ -216,13 +219,14 @@ export class SpendPage {
             },
             dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            loading.dismiss();
             if(res.code == 200)
             {
                 this.data_spend = res.data;
             }
         })
-        .always(()=>{
+        .catch(()=>{
             loading.dismiss();
         })
     }
@@ -248,13 +252,14 @@ export class SpendPage {
             url = this.helper.config.base_url('admin/outlet/spend/update');
         }
 
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
             url: url,
             type: 'POST',
             data: data,
             dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            loading.dismiss();
             if(res.code == 200)
             {
                 this.ResetItem()
@@ -268,7 +273,7 @@ export class SpendPage {
                 }
             }
         })
-        .always(()=>{
+        .catch(()=>{
             loading.dismiss();
         })
     }
@@ -590,13 +595,14 @@ export class SpendPage {
             content: "Menghapus data"
         })
         let url = this.helper.config.base_url('admin/outlet/spend/delete');
-        this.helper.$.ajax({
+        this.helper.loading_countdown({
             url: url,
             type: 'POST',
             data: item,
             dataType: 'json'
         })
-        .done((res)=>{
+        .then((res:any)=>{
+            loading.dismiss();
             if(res.code == 200)
             {
                 // this.data_spend = res.data;
@@ -605,7 +611,7 @@ export class SpendPage {
                 // this.get_data_spend();
             }
         })
-        .always(()=>{
+        .catch(()=>{
             loading.dismiss();
         })
     }

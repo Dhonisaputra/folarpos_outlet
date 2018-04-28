@@ -28,8 +28,8 @@ export class BillItemEditorPage {
   	this.bill = this.navParams.data.bill
   	console.log(this.bill)
     this.billProvider.update_bill_component(this.navParams.data.bill, false)
-	this.billProvider.count_pricing();
-	this.events.publish('bill.update', {})
+	  this.billProvider.count_pricing();
+	  this.events.publish('bill.update', {})
   }
 
 }

@@ -72,10 +72,12 @@ export class AiRemoteProvider {
         this.network.onDisconnect().subscribe(() => {
             conn.present();
             contoasting.present();
+            this.local.set_params('connection',false);
         
         });
 
         this.network.onConnect().subscribe(() => {
+            this.local.set_params('connection',true);
             conn.dismiss();
             this.toast.create({
                 message: "Koneksi kembali tersedia",
@@ -101,11 +103,7 @@ export class AiRemoteProvider {
     }
     default_params()
     {
-        return {
-            host:'https://folariumremote.herokuapp.com/',
-            apiKey:'5pFv2d0zM7z7iM/LekW8izupPjzhtmgqgVQXKz2y+VwQqZoU8hhy8N64h9zdOokbPZxxh5APqQ4wQPBysBVmJa0=' ,
-            id:undefined
-        }
+        return this.config.remote_host_default();
     }
     subscribe(event, fn)
     {	
@@ -167,6 +165,7 @@ export class AiRemoteProvider {
 
                 this.subscribe(outlet_id+'.app.cashier:new-order', (res)=>{
                     if(res.uuid && res.uuid == uuid){return false;}
+                    console.log(res)
                     this.events.publish('transaction:refresh')
                     this.events.publish('monitoring_request:refresh')
                     this.localNotifications.schedule({

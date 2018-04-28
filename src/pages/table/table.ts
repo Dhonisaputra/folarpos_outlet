@@ -86,13 +86,10 @@ export class TablePage {
   get_data_table()
   {
     return new Promise((resolve, reject)=>{
-      let tableRefresh = this.helper.loadingCtrl.create({
-        content: "Mengambil data meja"
-      })
-      tableRefresh.present();
+      
       this.dbTableProvider.get_table({outlet: this.outlet})
-      .done( (res)=>{
-        tableRefresh.dismiss();
+      .then( (res:any)=>{
+        console.log(res)
         res = !this.helper.isJSON(res)? res : JSON.parse(res);
         if(res.code == 200)
         {
@@ -103,13 +100,8 @@ export class TablePage {
           reject()
         }
       })
-      .fail(()=>{
-
-          reject()
-      })
       .catch(()=>{
           reject()
-          tableRefresh.dismiss();
       })
     })
   }
@@ -148,6 +140,9 @@ export class TablePage {
         break;
       case 2:
         // code...
+        this.billProvider.set_bill_component('table_name','Bungkus');
+        this.billProvider.update_bill_component({},true);
+        this.events.publish('bill.update', {})
         this.navCtrl.setRoot(ProductPage)
         break;
       

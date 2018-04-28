@@ -14,6 +14,7 @@ import * as $ from "jquery"
 
 import * as moment from 'moment';
 import * as html2canvas from "html2canvas";
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 
 
 
@@ -34,6 +35,7 @@ import * as html2canvas from "html2canvas";
       private defaultTimeout: Number = 100;
       audioType: string = 'html5';
       sounds: any = [];
+      uuid: any;
       constructor(
           public http: HttpClient, 
           public config: ConfigProvider, 
@@ -51,6 +53,7 @@ import * as html2canvas from "html2canvas";
           public localNotifications: LocalNotifications,
           public airemote: AiRemoteProvider,
           public nativeAudio: NativeAudio,
+          public uniqueDeviceID: UniqueDeviceID,
 
           ) {
           this.win = window;
@@ -64,11 +67,51 @@ import * as html2canvas from "html2canvas";
           if(platform.is('cordova')){
               this.audioType = 'native';
           }
+          this.get_uuid();
+      }
+
+      get_uuid()
+      {
+        return new Promise((resolve, reject)=>{
+
+
+            this.storage.get(this.config.variable.credential)
+            .then((val) => {
+                if(!this.platform.is('cordova'))
+                {
+                    this.storage.get('uuid')
+                    .then((uuid:any) => {
+                        if(!uuid)
+                        {
+                            this.uuid = val.outlet.outlet_id+'-'+this.moment().valueOf()+'-'+val.users.users_id;
+                            this.storage.set('uuid', this.uuid);
+                        }else
+                        {
+                            this.uuid = uuid;
+                            this.local.set_params('uuid', this.uuid)
+                        }
+                        resolve(uuid);
+                    })
+                }else
+                {
+                    this.uniqueDeviceID.get()
+                    .then((uuid: any)=>{
+
+                        this.uuid = uuid? uuid: val.outlet.outlet_id+'-'+this.moment().valueOf()+'-'+val.users.users_id;
+                        this.local.set_params('uuid', this.uuid)
+
+                        resolve(uuid);
+                    });
+                }
+            })
+
+        })
+
       }
 
       uniqid()
       {
-          var unique = function(origArr) {
+          var unique = (origArr) => {
                 var newArr = [],
                     origLen = origArr.length,
                     found, x, y;
@@ -88,7 +131,7 @@ import * as html2canvas from "html2canvas";
                 return newArr;
             };
 
-            var uniqID = function() {
+            var uniqID =() => {
                 var ts = +new Date;
                 var tsStr = ts.toString();
 
@@ -98,7 +141,7 @@ import * as html2canvas from "html2canvas";
 
                 var filtered = unique(rev);
 
-                return filtered.join('');
+                return filtered.join('')+(this.moment().unix());
 
             };
 
@@ -125,11 +168,11 @@ import * as html2canvas from "html2canvas";
               let duration = options.duration||30000;
               let isFullyLoaded = false;
               let variable = this.local.get_params(this.config.variable.credential);
-              let cti = options.duration||increase
+              let cti = duration
 
               // set loading
               let loader = this.loadingCtrl.create({
-                  content: "Mengambil data. Silahkan tunggu! <span class='"+uniq+"'> "+(options.duration/1000)+" </span> detik",
+                  content: (options.onload_title||"Mengambil data. Silahkan tunggu!")+" <span class='"+uniq+"'> "+(options.duration/1000)+" </span> detik",
                   duration: options.duration||duration,
               });
 
@@ -149,10 +192,17 @@ import * as html2canvas from "html2canvas";
 
                let aj = this.$.ajax(ajax)
               .done((res)=>{
+                  console.log(res)
                   loader.dismiss();
                   window.clearInterval(ct)
                   isFullyLoaded = true;
                   resolve(res);
+              })
+              .fail((res)=>{
+                  loader.dismiss();
+                  window.clearInterval(ct)
+                  isFullyLoaded = true;
+                  reject(res)
               })
 
               loader.onDidDismiss(()=>{
@@ -162,7 +212,7 @@ import * as html2canvas from "html2canvas";
                   {
                       aj.abort();
                       this.alertCtrl.create({
-                          title: "Gagal mengambil data.",
+                          title: options.error_title||"Gagal mengambil data.",
                           message: "Coba lagi?",
                           buttons: [{
                               text: "Tidak",
@@ -180,6 +230,12 @@ import * as html2canvas from "html2canvas";
                                       options.duration = 5000;
                                   }
                                   this.loading_countdown(ajax, options)
+                                  .then((res)=>{
+                                    resolve(res)
+                                  })
+                                  .catch((res)=>{
+                                    reject(res)
+                                  })
                               }
                           }]
                       }).present();
@@ -204,11 +260,57 @@ import * as html2canvas from "html2canvas";
               })*/
         });
           
-      }
+    }
+
+    /*
+    @params
+        - target = array
+    */
+    chaining_loading(target:any=[], options:any={})
+    {
+        options = Object.assign({
+            name: "default"
+        }, options)
+        var len = target.length;
+        var index = 0;
+        var results:any = []
+
+        var loading = (target_each)=>{
+            return new Promise((resolve, reject)=>{
+                this.loading_countdown(target_each)
+                .then((res:any)=>{
+                    res = this.isJSON(res)? JSON.parse(res):res;
+                    var id = target[index]['id'] || 'chaining-'+index;
+                    let res_ev = {id: id, status:1,results: res, ajax: target[index], index: index };
+                    results.push(res_ev);
+                    this.events.publish(options.name, res_ev)
+                    
+                    if(index == len -1)
+                    {
+                        this.events.publish(options.name, {status:2, results: results})
+                    }
+                    index = index + 1;
+                    if(index < len)
+                    {
+                        loading(target[index])
+                    }
+                    resolve(res);
+                })
+                .catch((res)=>{
+                     var id = target[index]['id'] || 'chining-'+index;
+                    let res_ev = {id: id, status:1,results: res, ajax: target[index], index: index };
+                    this.events.publish(options.name,res_ev)
+                    reject();
+                })
+            })
+        }
+
+        loading(target[index])
+    }
 
   /*
-	Source
-	- https://faisalman.com/2012/02/27/konversi-angka-ke-format-rupiah-di-javascript/
+    Source
+    - https://faisalman.com/2012/02/27/konversi-angka-ke-format-rupiah-di-javascript/
     */
     intToIDR(angka:any)
     {
@@ -223,6 +325,8 @@ import * as html2canvas from "html2canvas";
         return rev2.split('').reverse().join('');
 
     }
+
+
 
     nativeWindow()
     {
@@ -295,6 +399,11 @@ import * as html2canvas from "html2canvas";
     {
         let outletName = this.local.get_params(this.config.variable.credential).outlet.outlet_name? this.local.get_params(this.config.variable.credential).outlet.outlet_name : 'OUTLET';
         return this.get_initial_outlet_name(outletName, '.');
+    }
+
+    outlet_active()
+    {
+        return this.local.get_params(this.config.variable.credential).outlet.outlet_id;
     }
 
   // audio
@@ -373,6 +482,11 @@ import * as html2canvas from "html2canvas";
       }
       return value;
 
+  }
+
+  closeApp()
+  {
+      this.platform.exitApp()
   }
 
 }

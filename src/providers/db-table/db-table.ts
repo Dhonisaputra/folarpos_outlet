@@ -27,8 +27,8 @@ export class DbTableProvider {
   	// return this.storage.get('table')
     let urlTable = this.config.base_url('admin/outlet/table/data/get')
     let dataTable = Object.assign({status: 1}, data)
-    return $.post(urlTable, dataTable)
-    .done((res)=>{
+    return this.helper.loading_countdown({url:urlTable, data:dataTable})
+    .then((res:any)=>{
         res = JSON.parse(res);
         this.storage.set('table', res)
         .then(()=>{
@@ -37,6 +37,14 @@ export class DbTableProvider {
         .catch(()=>{
             console.error('Error occured when updating data table')
         })
+        return res;
+    })
+    .catch(()=>{
+      this.helper.alertCtrl.create({
+        title: "Kesalahan saat mengambil data meja",
+        message: "Silahkan coba lagi",
+        buttons: ["OK"],
+      }).present()
     })
   }
 

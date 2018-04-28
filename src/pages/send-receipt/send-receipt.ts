@@ -36,45 +36,50 @@ export class SendReceiptPage {
 				message: "Untuk mengirimkan nota ke alamat email, mohon isikan email pengguna pada kolom email yang telah disediakan.",
 				buttons: ["OK"]
 			}).present()
-			return false;
-  		}
-  		let loading = this.helper.loadingCtrl.create({
-  			content: "Mengirimkan nota"
-  		});
-  		loading.present();
+  		}else
+  		{
+  			
+	  		let loading = this.helper.loadingCtrl.create({
+	  			content: "Mengirimkan nota"
+	  		});
+	  		loading.present();
 
-  		let url = this.helper.config.base_url('admin/outlet/transaction/send_bill')
-  		return this.helper.$.post(url, {pay_id: this.latest_bill_id, email: this.email})
-  		.done((res)=>{
-  			res = JSON.parse(res)
-  			loading.dismiss();
-  			if(res.code == 200)
-  			{
-  				if(!returned)
-  				{
-  					this.helper.alertCtrl.create({
-  						title: "Proses selesai",
-  						message: "Email telah dikirimkan",
-  						buttons: ["OK"]
-  					}).present()
-  				}
-  			}else
-  			{
-  				this.helper.alertCtrl.create({
+	  		let url = this.helper.config.base_url('admin/outlet/transaction/send_bill')
+	  		let ajax = this.helper.loading_countdown({url:url, data:{pay_id: this.latest_bill_id, email: this.email} })
+	  		ajax.then((res:any)=>{
+	  			res = JSON.parse(res)
+	  			loading.dismiss();
+	  			if(res.code == 200)
+	  			{
+	  				if(!returned)
+	  				{
+	  					this.helper.alertCtrl.create({
+	  						title: "Proses selesai",
+	  						message: "Email telah dikirimkan",
+	  						buttons: ["OK"]
+	  					}).present()
+	  				}
+	  			}else
+	  			{
+	  				this.helper.alertCtrl.create({
+						title: "Proses gagal",
+						message: "Email gagal dikirimkan",
+						buttons: ["OK"]
+					}).present()
+	  			}
+	  			return res;
+	  		})
+	  		.catch(()=>{
+	  			loading.dismiss();
+	  			this.helper.alertCtrl.create({
 					title: "Proses gagal",
 					message: "Email gagal dikirimkan",
 					buttons: ["OK"]
 				}).present()
-  			}
-  		})
-  		.fail(()=>{
-  			loading.dismiss();
-  			this.helper.alertCtrl.create({
-				title: "Proses gagal",
-				message: "Email gagal dikirimkan",
-				buttons: ["OK"]
-			}).present()
-  		})
+	  		})
+	  		return ajax;
+  		}
+
 
   	}
 	printReceipt()
@@ -103,7 +108,7 @@ export class SendReceiptPage {
 	sendAndPrint()
 	{
 		this.sendReceiptToEmail(true)
-		.done((res)=>{
+		.then((res:any)=>{
 			res = JSON.parse(res)
 			if(res.code == 200)
 			{

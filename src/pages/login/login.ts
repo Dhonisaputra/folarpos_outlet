@@ -22,7 +22,6 @@ export class LoginPage {
 	user:any={}
 	win:any=window
 	constructor(public navCtrl: NavController, public navParams: NavParams, private helper: HelperProvider, private platform:Platform) {
-		console.log(this.win.plugins)
 		if(this.win.plugins && typeof this.win.plugins.screensize == 'function')
 		{
 
@@ -60,36 +59,89 @@ export class LoginPage {
 
 	check_credential()
 	{
-				console.log('login')
-			let loader = this.helper.loadingCtrl.create({
-				content: 'Melakukan pengecheckan pengguna. Silahkan tunggu..'
-			})
-			loader.present();
 			
-			this.helper.storage.get(this.helper.config.variable.credential)
-			.then((val) => {
-				console.log(val)
-				if(!val || !val.outlet)
+			let deff = this.helper.$.Deferred();
+
+			let url = this.helper.config.base_url('apps/apk/version/latest')+'?mobile';
+			this.helper.loading_countdown({url: url})
+			.then((res:any)=>{
+				res = this.helper.isJSON(res)? JSON.parse(res) : res;
+				if(res.code == 200)
 				{
-					this.helper.local.set_params('is_login', false);
-					loader.dismiss();
-
-				}else
-				{
-
-					this.helper.storage.get(this.helper.config.variable.settings)
-					.then( (resSettings)=>{
-						val.outlet_device = {};
-						this.helper.local.set_params(this.helper.config.variable.credential, val);
-						this.helper.local.set_params('is_login', true);
-						this.helper.local.set_params(this.helper.config.variable.settings, resSettings);
-						let default_page = resSettings && !resSettings.choose_table_first?  ProductPage : TablePage ;
-						this.navCtrl.setRoot(OutletListPage);
-						loader.dismiss();
-					})
-
-
+					if(res.data.apk_version_build != this.helper.config.build_number)
+					{
+						if(res.data.force_update == 1)
+						{
+							deff.reject(true)
+							this.helper.alertCtrl.create({
+								title: "Versi aplikasi terbaru ditemukan",
+								message: "Silahkan update folarpos instant anda",
+								enableBackdropDismiss: false,
+								buttons:[{
+									text: "tutup",
+									handler: ()=>{
+										this.helper.closeApp();
+									}
+								}, {
+									text: "Perbarui aplikasi",
+									handler: ()=>{
+										window.open(res.data.url_download, '_blank')
+									}
+								}]
+							}).present()
+						}else
+						{
+							this.helper.alertCtrl.create({
+								title: "Versi aplikasi terbaru ditemukan",
+								message: "Apakah anda ingin memperbarui aplikasi",
+								enableBackdropDismiss: false,
+								buttons:[{
+									text: "Tidak",
+									handler: ()=>{
+										deff.resolve(true)
+									}
+								}, {
+									text: "Ya, Perbarui aplikasi",
+									handler: ()=>{
+										deff.reject(true)
+										window.open(res.data.url_download, '_blank')
+									}
+								}]
+							}).present()
+						}
+					}else
+					{
+						deff.resolve(true)
+					}
 				}
+			})
+
+			this.helper.$.when(deff.promise())
+			.then(()=>{
+
+				this.helper.storage.get(this.helper.config.variable.credential)
+				.then((val) => {
+					console.log(val)
+					if(!val || !val.outlet)
+					{
+						this.helper.local.set_params('is_login', false);
+
+					}else
+					{
+
+						this.helper.storage.get(this.helper.config.variable.settings)
+						.then( (resSettings)=>{
+							val.outlet_device = {};
+							this.helper.local.set_params(this.helper.config.variable.credential, val);
+							this.helper.local.set_params('is_login', true);
+							this.helper.local.set_params(this.helper.config.variable.settings, resSettings);
+							let default_page = resSettings && !resSettings.choose_table_first?  ProductPage : TablePage ;
+							this.navCtrl.setRoot(OutletListPage);
+						})
+
+
+					}
+				})
 			})
 
 
@@ -122,27 +174,49 @@ export class LoginPage {
 			return false;
 		}
 		loader.present();
-		this.helper.$.post(url, {
+		this.helper.loading_countdown({url:url, data: {
 			user_email_or_phone: data.user_email_or_phone,
 			user_password: data.user_password
-		})
-		.then( (res) => {
-			res = !this.helper.isJSON(res)? res : JSON.parse(res);
-			if(res.status == 1)
+		}})
+		.then( (res:any) => {
+			loader.dismiss();
+			if(res.apk.apk_version_build != this.helper.config.build_number)
 			{
-	        	this.helper.local.set_params('is_login', true);
-				this.helper.local.set_params(this.helper.config.variable.credential, res);
-				this.helper.storage.set(this.helper.config.variable.credential, res);
-	        	// alertSuccess.present();
-				this.navCtrl.setRoot(OutletListPage);
+				this.helper.alertCtrl.create({
+					title: "Versi aplikasi terbaru ditemukan",
+					message: "Silahkan update folarpos instant anda",
+					buttons:[{
+						text: "tutup",
+						handler: ()=>{
+							this.helper.closeApp();
+						}
+					}, {
+						text: "Perbarui",
+						handler: ()=>{
+							window.open(res.apk.url_download, '_blank')
+						}
+					}]
+				})
 			}else
 			{
-	        	this.helper.local.set_params('is_login', false);
-	        	if(res.msg)
-	        	{
-	        		alert.setMessage(res.msg);
-	        	}
-	        	alert.present();
+
+				res = !this.helper.isJSON(res)? res : JSON.parse(res);
+				if(res.status == 1)
+				{
+		        	this.helper.local.set_params('is_login', true);
+					this.helper.local.set_params(this.helper.config.variable.credential, res);
+					this.helper.storage.set(this.helper.config.variable.credential, res);
+		        	// alertSuccess.present();
+					this.navCtrl.setRoot(OutletListPage);
+				}else
+				{
+		        	this.helper.local.set_params('is_login', false);
+		        	if(res.msg)
+		        	{
+		        		alert.setMessage(res.msg);
+		        	}
+		        	alert.present();
+				}
 			}
 
 		}, (err)=>{
@@ -152,7 +226,7 @@ export class LoginPage {
 				buttons: ["OK"]
 			}).present();
 		})	
-		.always( ()=>{
+		.catch( ()=>{
 			loader.dismiss();
 		}) 
 	}

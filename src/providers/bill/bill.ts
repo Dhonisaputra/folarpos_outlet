@@ -55,72 +55,66 @@ export class BillProvider {
 
     save(data:any={})
     {
-        let item = this.helper.local.get_params(this.helper.config.variable.credential).outlet;
-        let loader = this.loadingCtrl.create({
-          content: "Memproses permintaan...",
-        });
-        loader.present();
+        return new Promise((resolve, reject)=>{
 
-        let alertData = this.alertCont.create({
-            title: "Process gagal",
-            message: "Terdapat kesalahan ketika menyimpan nota. Silahkan laporkan pengembang sistem.",
-            buttons : ["Ok"]
-        })
-
-        let successData = this.alertCont.create({
-            title: "Process selesai",
-            message: "Nota telah disimpan",
-            buttons : ["Ok"]
-        })
-
-        var url = this.config.base_url('admin/outlet/transaction/add')
-        let billdata = this.data_bill(data)
-        billdata = Object.assign(billdata, data)
-        billdata.complement_status = data.complement_status == 'true'? 1 : 0;
-
-        this.bill = billdata;
-
-        return $.post(url, billdata)
-        .done((res) => {
-            res = !this.helper.isJSON(res)? res : JSON.parse(res);
+            let item = this.helper.local.get_params(this.helper.config.variable.credential).outlet;
             
-            if(res.code == 200)
-            {
+            let alertData = this.alertCont.create({
+                title: "Process gagal",
+                message: "Terdapat kesalahan ketika menyimpan nota. Silahkan laporkan pengembang sistem.",
+                buttons : ["Ok"]
+            })
 
-                this.helper.airemote.send(item.outlet_id+'.app.cashier:new-order','',{title:"Terdapat pesanan baru"}, function(){})
-                successData.present();
+            let successData = this.alertCont.create({
+                title: "Process selesai",
+                message: "Nota telah disimpan",
+                buttons : ["Ok"]
+            })
 
-            }else
-            {
+            var url = this.config.base_url('admin/outlet/transaction/add')
+            let billdata = this.data_bill(data)
+            billdata = Object.assign(billdata, data)
+            billdata.complement_status = data.complement_status == 'true'? 1 : 0;
+
+            this.bill = billdata;
+
+            return this.helper.loading_countdown({url: url, data:billdata}, {onload_title: "Menyimpan order. Silahkan tunggu.."})
+            .then((res:any) => {
+                console.log(res)
+                res = !this.helper.isJSON(res)? res : JSON.parse(res);
+                
+                if(res.code == 200)
+                {
+
+                    this.helper.airemote.send(item.outlet_id+'.app.cashier:new-order','',{uuid: this.helper.uuid, title:"Terdapat pesanan baru"}, function(){})
+                    successData.present();
+                    resolve(res)
+
+                }else
+                {
+                    reject(res)
+                    alertData.present();
+                }
+            })
+            .catch(()=>{
+                reject({code:500})
+
                 alertData.present();
-            }
+            })
         })
-        .fail(()=>{
-            alertData.present();
-        })
-        .always(()=>{
-            loader.dismiss();
-        })
+
     }
-    get(data:any)
+    get(data:any, opt:any={})
     {
 
         var url = this.config.base_url('admin/outlet/transaction/get')
         data = data
-        return $.post(url, data)
-        .done((res) => {
-            res = JSON.parse(res)
-            if(res.code == 500)
-            {
-
-
-            }
-        })
+        return this.helper.loading_countdown({url:url, data:data}, opt)
     }
     
-    get_unpaid_bill(data:any)
+    get_unpaid_bill(data:any, opt:any={})
     {
-        return this.get(data)
+        return this.get(data, opt)
     }
 
     get_bill()
@@ -590,7 +584,7 @@ export class BillProvider {
             payment_cancel_status: 1
 
         }
-        return $.post(url, billdata)
+        return this.helper.loading_countdown({url:url, data:billdata})
     }
 
 

@@ -18,6 +18,8 @@ import { AboutPage } from '../pages/about/about';
 import { WaitersPage } from '../pages/waiters/waiters';
 import { PrintBluetoothPanelPage } from '../pages/print-bluetooth-panel/print-bluetooth-panel';
 import { KitchenbarPage } from '../pages/kitchenbar/kitchenbar';
+import { LoadingPage } from '../pages/loading/loading';
+import { ReportPage } from '../pages/report/report';
 
 
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
@@ -30,10 +32,11 @@ import { HelperProvider } from '../providers/helper/helper';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage         : any = LoginPage;
+  rootPage         : any = LoadingPage;
   tablePage        : any = TablePage;
   productPage      : any = ProductPage;
-  kitchenbarPage      : any = KitchenbarPage;
+  kitchenbarPage   : any = KitchenbarPage;
+  reportPage   : any = ReportPage;
   
   waitersPage       :any=WaitersPage;
   stocksPage       :any=StocksPage;

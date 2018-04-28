@@ -94,14 +94,13 @@ export class OutletListPage {
             let url = this.helper.config.base_url('admin/outlet/employee');
             this.helper.loading_countdown({url: url, data: {users_id:users_id, smartphone:true, uuid:this.uid} })
             .then((res:any)=>{
-                console.log(res)
                 res = JSON.parse(res)
                 this.outlets = res
                 this.isSearch = true;
                 resolve(res)
             })
             .catch(()=>{
-                reject()
+                // reject()
                 this.isSearch = true;
                 this.outlets = []
             })
@@ -144,8 +143,10 @@ export class OutletListPage {
                             outlet_id: item.outlet_id,
                             uuid: this.uid
                         }
-                        this.helper.$.post(url, data)
-                        .then((res)=>{
+                        this.helper.loading_countdown(url, data)
+                        .then((res:any)=>{
+                            loading.dismiss();
+
                             res = JSON.parse(res);
                             switch (res.code) {
                                 case 200:
@@ -173,15 +174,12 @@ export class OutletListPage {
                                 break;
                             }
                         })
-                        .fail(()=>{
+                        .catch(()=>{
                             this.helper.alertCtrl.create({
                                 title: "Permintaan hak akses Gagal",
                                 message: "Terdapat kesalahan saat melakukan pengiriman hak akses ke outlet. Silahkan ulangi kembali!",
                                 buttons: ["OK"]
                             }).present();
-                        })
-                        .always(()=>{
-                            loading.dismiss();
                         })
                     }
                 }]
