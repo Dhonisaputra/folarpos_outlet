@@ -134,7 +134,7 @@ export class OutletListPage {
                             content: "Mengirimkan permintaan. Silahkan tunggu!"
                         });
 
-                        loading.present();
+                        // loading.present();
 
                         let users_id = this.helper.local.get_params(this.helper.config.variable.credential).users.users_id;
                         let url = this.helper.config.base_url('admin/device/authority/request');
@@ -143,9 +143,9 @@ export class OutletListPage {
                             outlet_id: item.outlet_id,
                             uuid: this.uid
                         }
-                        this.helper.loading_countdown(url, data)
+                        this.helper.loading_countdown({url:url, data:data})
                         .then((res:any)=>{
-                            loading.dismiss();
+                            // loading.dismiss();
 
                             res = JSON.parse(res);
                             switch (res.code) {
@@ -155,6 +155,7 @@ export class OutletListPage {
                                     message: "Menunggu konfirmasi dari admin outlet",
                                     buttons: ["OK"]
                                 }).present();
+                                this.get_outlet();
                                 break;
 
                                 case 304:

@@ -38,7 +38,7 @@ export class ReportPage {
 			outlet_id: this.helper.outlet_active()
 		}
 	})
-	.then((res)=>{
+	.then((res:any)=>{
 		res = this.helper.isJSON(res)? JSON.parse(res) : {}
 		this.reports = res;
 	})

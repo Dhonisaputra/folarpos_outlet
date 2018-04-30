@@ -63,7 +63,7 @@ export class LoginPage {
 			let deff = this.helper.$.Deferred();
 
 			let url = this.helper.config.base_url('apps/apk/version/latest')+'?mobile';
-			this.helper.loading_countdown({url: url})
+			this.helper.loading_countdown({url: url, data:{type:'cashier'}})
 			.then((res:any)=>{
 				res = this.helper.isJSON(res)? JSON.parse(res) : res;
 				if(res.code == 200)
@@ -143,8 +143,6 @@ export class LoginPage {
 					}
 				})
 			})
-
-
 	}
 
 	signIn()
@@ -179,28 +177,9 @@ export class LoginPage {
 			user_password: data.user_password
 		}})
 		.then( (res:any) => {
+			console.log(res)
 			loader.dismiss();
-			if(res.apk.apk_version_build != this.helper.config.build_number)
-			{
-				this.helper.alertCtrl.create({
-					title: "Versi aplikasi terbaru ditemukan",
-					message: "Silahkan update folarpos instant anda",
-					buttons:[{
-						text: "tutup",
-						handler: ()=>{
-							this.helper.closeApp();
-						}
-					}, {
-						text: "Perbarui",
-						handler: ()=>{
-							window.open(res.apk.url_download, '_blank')
-						}
-					}]
-				})
-			}else
-			{
-
-				res = !this.helper.isJSON(res)? res : JSON.parse(res);
+			res = !this.helper.isJSON(res)? res : JSON.parse(res);
 				if(res.status == 1)
 				{
 		        	this.helper.local.set_params('is_login', true);
@@ -217,7 +196,6 @@ export class LoginPage {
 		        	}
 		        	alert.present();
 				}
-			}
 
 		}, (err)=>{
 			this.helper.alertCtrl.create({

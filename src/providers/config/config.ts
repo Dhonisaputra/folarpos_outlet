@@ -17,8 +17,8 @@ export class ConfigProvider {
 	remote_host:object = {}
 	build_number:any;
 	constructor() {
-		// this.host = 'http://instant.folarpos.co.id/';
-		this.host = 'http://localhost/folarpos-instant/';
+		this.host = 'http://instant.folarpos.co.id/';
+		// this.host = 'http://localhost/folarpos-instant/';
 		// this.host = 'http://192.168.1.38/folarpos-instant/';
 		// this.host = 'http://192.168.0.104/folarpos-instant/';
 		// this.host = 'http://192.168.100.31/folarpos-instant/';
@@ -30,8 +30,8 @@ export class ConfigProvider {
 	remote_host_default()
 	{
 		return {
-			// host:'https://folariumremote.herokuapp.com/',
-			host:'http://localhost:3000',
+			host:'https://folariumremote.herokuapp.com/',
+			// host:'http://localhost:3000',
             apiKey:'instantFolar3030' ,
             id:undefined
 		}

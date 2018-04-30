@@ -158,7 +158,7 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
           return new Promise((resolve, reject) =>
           {
 
-              // uniqid
+              // uniqid asdasd
               let uniq = this.uniqid();
               // each time increase time
               let increase = options.increase||10000;
@@ -168,11 +168,11 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
               let duration = options.duration||30000;
               let isFullyLoaded = false;
               let variable = this.local.get_params(this.config.variable.credential);
-              let cti = duration
+              let cti = options.duration||increase
 
               // set loading
               let loader = this.loadingCtrl.create({
-                  content: (options.onload_title||"Mengambil data. Silahkan tunggu!")+" <span class='"+uniq+"'> "+(options.duration/1000)+" </span> detik",
+                  content: "Mengambil data. Silahkan tunggu! <span class='"+uniq+"'> "+(options.duration/1000)+" </span> detik",
                   duration: options.duration||duration,
               });
 
@@ -192,17 +192,10 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 
                let aj = this.$.ajax(ajax)
               .done((res)=>{
-                  console.log(res)
                   loader.dismiss();
                   window.clearInterval(ct)
                   isFullyLoaded = true;
                   resolve(res);
-              })
-              .fail((res)=>{
-                  loader.dismiss();
-                  window.clearInterval(ct)
-                  isFullyLoaded = true;
-                  reject(res)
               })
 
               loader.onDidDismiss(()=>{
@@ -212,7 +205,7 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
                   {
                       aj.abort();
                       this.alertCtrl.create({
-                          title: options.error_title||"Gagal mengambil data.",
+                          title: "Gagal mengambil data.",
                           message: "Coba lagi?",
                           buttons: [{
                               text: "Tidak",
@@ -260,7 +253,7 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
               })*/
         });
           
-    }
+      }
 
     /*
     @params

@@ -32,7 +32,7 @@ import { HelperProvider } from '../providers/helper/helper';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage         : any = LoadingPage;
+  rootPage         : any = LoginPage;
   tablePage        : any = TablePage;
   productPage      : any = ProductPage;
   kitchenbarPage   : any = KitchenbarPage;

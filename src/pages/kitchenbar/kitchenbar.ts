@@ -376,11 +376,8 @@ export class KitchenbarPage {
             this.transaction_params.data.order_by = this.order_by;
 
             this.get_transaction(this.transaction_params)
-<<<<<<< HEAD
-            .then((res)=>{
-=======
+
             .then((res:any)=>{
->>>>>>> e5b010e0726340a49feb899b2f467dd91ba40965
                 resolve(res)
             })
             .catch(()=>{
