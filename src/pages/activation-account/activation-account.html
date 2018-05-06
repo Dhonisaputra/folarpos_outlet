@@ -1,0 +1,46 @@
+<!--
+  Generated template for the ActivationAccountPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+	<ion-toolbar color="main">
+		<ion-navbar>
+			<ion-title>Aktivasi akun</ion-title>
+		</ion-navbar>
+	</ion-toolbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	<div class="center distributed" style="flex-direction: column;height: 50vh;">
+		
+		<div class="col-md-6 col-lg-6 col-sm-8 col-xs-12">
+
+			<div>
+				<form (ngSubmit)="confirmationAccount($event)">
+							<div class="form-group">
+								<div class="input-group">								
+									<div class="input-group-addon">
+										<ion-icon name="mail"></ion-icon>
+									</div>
+									<input class="form-control" name="email" type="text" placeholder="Email" required [(ngModel)]="user.user_email_or_phone">
+								</div>
+							</div>
+
+
+							<div class="form-group" style="margin-top: 50px;">
+									<input class="form-control" name="conf_password" type="text" maxlength="6" placeholder="Confirm your activation code" required [(ngModel)]="user.users_code_confirmation" style="font-size: 2rem;">
+							</div>
+
+
+
+					<button ion-button block icon-right class="btn-next-signup" type="submit">Konfirmasi akun <ion-icon name="send"></ion-icon> </button>
+				</form>
+			</div>
+
+		</div>
+	</div>
+</ion-content>

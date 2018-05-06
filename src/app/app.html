@@ -13,7 +13,7 @@
           <img src="{{helper.config.base_url( )+helper.local.get_params(helper.config.variable.credential).users.users_photo != helper.config.base_url()+'null'? helper.config.base_url( )+helper.local.get_params(helper.config.variable.credential).users.users_photo : 'assets/imgs/nonuser.png'}}">
         </ion-avatar>
         <h2>{{helper.local.get_params(helper.config.variable.credential).users.users_fullname}}</h2>
-        <p>{{helper.local.get_params(helper.config.variable.credential).outlet.outlet_roles_name}}</p>
+        <p>{{helper.local.get_params(helper.config.variable.credential).outlet.outlet_roles_name?helper.local.get_params(helper.config.variable.credential).outlet.outlet_roles_name:''}}</p>
         <p>
           <button ion-button small color="main" menuClose (click)="logout()"> <ion-icon ios="ios-log-out" md="md-log-out"></ion-icon> &nbsp; Log Out</button>
         </p>

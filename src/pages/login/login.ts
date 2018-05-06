@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { HelperProvider } from '../../providers/helper/helper'; 
-import { TablePage } from '../table/table'; 
-import { ProductPage } from '../product/product'; 
 import { OutletListPage } from '../outlet-list/outlet-list'; 
-import * as $ from "jquery"
+import { SignupPage } from '../signup/signup'; 
+import { ActivationAccountPage } from '../activation-account/activation-account'; 
 
 /**
  * Generated class for the LoginPage page.
@@ -135,7 +134,6 @@ export class LoginPage {
 							this.helper.local.set_params(this.helper.config.variable.credential, val);
 							this.helper.local.set_params('is_login', true);
 							this.helper.local.set_params(this.helper.config.variable.settings, resSettings);
-							let default_page = resSettings && !resSettings.choose_table_first?  ProductPage : TablePage ;
 							this.navCtrl.setRoot(OutletListPage);
 						})
 
@@ -171,14 +169,13 @@ export class LoginPage {
 			alert.present();
 			return false;
 		}
-		loader.present();
+		// loader.present();
 		this.helper.loading_countdown({url:url, data: {
 			user_email_or_phone: data.user_email_or_phone,
 			user_password: data.user_password
 		}})
 		.then( (res:any) => {
-			console.log(res)
-			loader.dismiss();
+			// loader.dismiss();
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
 				if(res.status == 1)
 				{
@@ -189,12 +186,22 @@ export class LoginPage {
 					this.navCtrl.setRoot(OutletListPage);
 				}else
 				{
-		        	this.helper.local.set_params('is_login', false);
-		        	if(res.msg)
-		        	{
-		        		alert.setMessage(res.msg);
-		        	}
-		        	alert.present();
+					switch (res.code) {
+						case 2001:
+							// code...
+							this.navCtrl.setRoot(ActivationAccountPage, {data: data})
+							break;
+						
+						default:
+							// code...
+				        	this.helper.local.set_params('is_login', false);
+				        	if(res.msg)
+				        	{
+				        		alert.setMessage(res.msg);
+				        	}
+				        	alert.present();
+							break;
+					}
 				}
 
 		}, (err)=>{
@@ -212,5 +219,12 @@ export class LoginPage {
 	ionViewDidLoad() {
 		console.log('ionViewDidLoad LoginPage');
 	}
+
+	openSignup()
+	{
+		this.navCtrl.push(SignupPage);
+	}
+
+
 
 }

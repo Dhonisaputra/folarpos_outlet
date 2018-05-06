@@ -14,7 +14,7 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
 import { TablePage } from '../pages/table/table';
-import { LoginPage } from '../pages/login/login';
+import { LoginPageModule } from '../pages/login/login.module';
 import { SendReceiptPage } from '../pages/send-receipt/send-receipt';
 import { PaymentPage } from '../pages/payment/payment';
 import { ReceiptPage } from '../pages/receipt/receipt';
@@ -72,7 +72,6 @@ import { BackgroundMode } from '@ionic-native/background-mode';
     HomePage,
     ListPage,
     TablePage,
-    LoginPage,
     SendReceiptPage,
     PaymentPage,
     ReceiptPage,
@@ -103,6 +102,7 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 
   ],
   imports: [
+    LoginPageModule,
     BrowserModule,
     PrintBluetoothPanelPageModule,
     BrowserAnimationsModule,
@@ -117,7 +117,6 @@ import { BackgroundMode } from '@ionic-native/background-mode';
     MyApp,
     HomePage,
     ListPage,
-    LoginPage,
     TablePage,
     SendReceiptPage,
     PaymentPage,

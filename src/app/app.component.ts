@@ -77,7 +77,12 @@ export class MyApp {
       if(!this.backgroundMode.isEnabled())
       {
         this.backgroundMode.enable();
+        this.backgroundMode.configure({
+          text: "Folarpos Instant is running",
+        })
       }
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE).catch(()=>{});
+
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
 
