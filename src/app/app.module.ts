@@ -39,8 +39,8 @@ import { SpendDetailPage } from '../pages/spend-detail/spend-detail';
 import { DebtPage } from '../pages/debt/debt';
 import { WaitersPage } from '../pages/waiters/waiters';
 import { KitchenbarPage } from '../pages/kitchenbar/kitchenbar';
-import { LoadingPage } from '../pages/loading/loading';
-import { ReportPage } from '../pages/report/report';
+import { LoadingPageModule } from '../pages/loading/loading.module';
+import { ReportPageModule } from '../pages/report/report.module';
 
 import { OutletListPageModule } from '../pages/outlet-list/outlet-list.module';
 import { PrintBluetoothPanelPageModule } from '../pages/print-bluetooth-panel/print-bluetooth-panel.module';
@@ -96,18 +96,18 @@ import { BackgroundMode } from '@ionic-native/background-mode';
     DebtPage,
     WaitersPage,
     KitchenbarPage,
-    LoadingPage,
-    ReportPage
     // AbsoluteDragDirective
 
   ],
   imports: [
     LoginPageModule,
+    ReportPageModule,
     BrowserModule,
     PrintBluetoothPanelPageModule,
     BrowserAnimationsModule,
     OutletListPageModule,
     HttpClientModule,
+    LoadingPageModule,
     AboutPageModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot()
@@ -141,8 +141,6 @@ import { BackgroundMode } from '@ionic-native/background-mode';
     DebtPage,
     WaitersPage,
     KitchenbarPage,
-    LoadingPage,
-    ReportPage
     
 
   ],

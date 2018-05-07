@@ -105,7 +105,7 @@
     <allow-navigation href="http://192.168.100.32:8100" />
     <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
     <plugin name="cordova-plugin-background-mode" spec="^0.7.2" />
+    <allow-navigation href="http://192.168.1.7:8100" />
     <engine name="browser" spec="~5.0.3" />
     <engine name="android" spec="~6.3.0" />
-    <allow-navigation href="http://192.168.1.7:8100" />
 </widget>
