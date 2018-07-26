@@ -56,10 +56,13 @@ export class StocksPage {
     }
   }
 
-  get_ingredient_data()
+  get_ingredient_data(refresher:any={})
     {
+      if(this.helper.airemote.isConnected())
+      {
+
         let url = this.helper.config.base_url('admin/outlet/ingredient/get');
-        this.helper.loading_countdown({
+        return this.helper.loading_countdown({
             url: url,
             type: 'POST',
             data: { 
@@ -75,15 +78,59 @@ export class StocksPage {
             dataType: 'json'
         })
         .then((res:any)=>{
+          this.helper.storage.set('md_stock', res)
             if(res.code == 200)
             {
                 this.ingredients = res.data;
             }
+            if(typeof refresher.complete == 'function')
+            {
+              refresher.complete();
+            }
+          return res;
         })
         .catch(()=>{
+          if(typeof refresher.complete == 'function')
+            {
+              refresher.complete();
+            }
         })
+      }else
+      {
+        return this.helper.storage.get('md_stock')
+        .then((res:any)=>{
+            if(res.code == 200)
+            {
+                this.ingredients = res.data;
+            }
+            if(typeof refresher.complete == 'function')
+            {
+              refresher.complete();
+            }
+          return res;
+        })
+        .catch(()=>{
+          if(typeof refresher.complete == 'function')
+            {
+              refresher.complete();
+            }
+        })
+        
+      }
+
     }
 
+  refresher(refresher:any={})
+  {
+    if(this.restaurant_mode)
+    {
+        this.get_ingredient_data(refresher)
+        
+    }else
+    {
+      this.first_time_get_product(refresher);    
+    }
+  }
   first_time_get_product(refresher:any={})
   {
     this.get_product({

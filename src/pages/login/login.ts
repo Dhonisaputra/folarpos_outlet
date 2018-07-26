@@ -4,6 +4,7 @@ import { HelperProvider } from '../../providers/helper/helper';
 import { OutletListPage } from '../outlet-list/outlet-list'; 
 import { SignupPage } from '../signup/signup'; 
 import { ActivationAccountPage } from '../activation-account/activation-account'; 
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 
 /**
  * Generated class for the LoginPage page.
@@ -20,7 +21,13 @@ import { ActivationAccountPage } from '../activation-account/activation-account'
 export class LoginPage {
 	user:any={}
 	win:any=window
-	constructor(public navCtrl: NavController, public navParams: NavParams, private helper: HelperProvider, private platform:Platform) {
+	constructor(
+		public navCtrl: NavController, 
+		public navParams: NavParams, 
+		private helper: HelperProvider, 
+		private platform:Platform,
+      	public transfer: FileTransfer,
+		) {
 		if(this.win.plugins && typeof this.win.plugins.screensize == 'function')
 		{
 
@@ -177,6 +184,16 @@ export class LoginPage {
 		.then( (res:any) => {
 			// loader.dismiss();
 			res = !this.helper.isJSON(res)? res : JSON.parse(res);
+				console.log(res)
+				
+				if(res.users.users_photo)
+				{
+					let ft : FileTransferObject = this.transfer.create();
+					let photo_name = res.users.users_photo.split('/');
+					ft.download(this.helper.config.base_url(res.users.users_photo), this.helper.file.dataDirectory+photo_name[photo_name.length - 1]);
+				}
+
+
 				if(res.status == 1)
 				{
 		        	this.helper.local.set_params('is_login', true);

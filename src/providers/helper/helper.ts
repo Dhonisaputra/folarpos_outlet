@@ -9,6 +9,8 @@ import { Storage } from '@ionic/storage';
 import { HTTP } from '@ionic-native/http';
 import { AiRemoteProvider } from '../../providers/ai-remote/ai-remote';
 import { NativeAudio } from '@ionic-native/native-audio';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { File } from '@ionic-native/file';
 
 import * as $ from "jquery"
 
@@ -54,11 +56,11 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
           public airemote: AiRemoteProvider,
           public nativeAudio: NativeAudio,
           public uniqueDeviceID: UniqueDeviceID,
+          public transfer: FileTransfer,
+          public file: File,
 
           ) {
           this.win = window;
-
-          console.log('Hello HelperProvider Provider');
           this.platform.ready().then(() => {
               if (this.win.cordova && !this.win.DatecsPrinter) {
                   console.warn("DatecsPrinter plugin is missing. Have you installed the plugin? \nRun 'cordova plugin add cordova-plugin-datecs-printer'");
@@ -70,6 +72,10 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
           this.get_uuid();
       }
 
+      is_online()
+      {
+        return this.airemote.isOnline;
+      }
       get_uuid()
       {
         return new Promise((resolve, reject)=>{

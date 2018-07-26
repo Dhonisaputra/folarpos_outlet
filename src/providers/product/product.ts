@@ -21,12 +21,14 @@ export class ProductProvider {
 
 	get_product(options:any)
 	{
-		if(options.online == true)
+		options.online = this.helper.local.get_params('connection');
+		console.log(this.helper.is_online())
+		if(this.helper.is_online())
 		{
 			options.data = Object.assign(
 				{
 					fields: 'id,outlet,type,price,name,unit,stock,image,charge_nominal,charge_percent,status,discount_nominal,discount_percent,status_text,can_be_removed,favorite,prod_description,ingredients'	,
-					limit: 25,
+					limit: 100000,
 					page: 1,				
 				}, options.data)
 
@@ -40,6 +42,8 @@ export class ProductProvider {
 			});
 
 			http.then( (res) =>{
+            	this.helper.storage.set('md_product', res);
+				return res;
 				// res = !this.helper.isJSON(res)? res : JSON.parse(res);
 				// this.data.temp_product = res;
 			} )
@@ -47,7 +51,7 @@ export class ProductProvider {
 			
 		}else
 		{
-			return this.storage.get('product')
+			return this.storage.get('md_product')
 		}
 	}
 

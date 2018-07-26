@@ -20,6 +20,7 @@ export class AiRemoteProvider {
     isInitialize:boolean=false;
     isListen:boolean=false;
     isListenGeneral:boolean=false;
+    isOnline:boolean=true;
     constructor(
         public http: HttpClient,
         public toast: ToastController, 
@@ -70,7 +71,7 @@ export class AiRemoteProvider {
         })
 
         this.network.onDisconnect().subscribe(() => {
-            conn.present();
+            // conn.present();
             contoasting.present();
             this.local.set_params('connection',false);
         
@@ -78,7 +79,7 @@ export class AiRemoteProvider {
 
         this.network.onConnect().subscribe(() => {
             this.local.set_params('connection',true);
-            conn.dismiss();
+            // conn.dismiss();
             this.toast.create({
                 message: "Koneksi kembali tersedia",
                 duration: 4000,
@@ -245,5 +246,10 @@ export class AiRemoteProvider {
 
             this.isListenGeneral = true;
         }
+    }
+
+    isConnected(): boolean {
+      let conntype = this.network.type;
+      return conntype && conntype !== 'unknown' && conntype !== 'none';
     }
 }

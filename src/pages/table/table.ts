@@ -35,7 +35,6 @@ export class TablePage {
   constructor(public screenOrientation: ScreenOrientation,public navCtrl: NavController, private appCtrl: App, public navParams: NavParams, private local : DbLocalProvider, private dbTableProvider: DbTableProvider, private helper: HelperProvider, private events:Events, private billProvider:BillProvider) {
     // this.helstorage.set('outlet', 1)
     // this.local.setdb('outlet', 1)
-    console.log(this.helper.local.get_params(this.helper.config.variable.credential));
   	/*this.local.opendb('table')
   	.then((res)=>{
   		if(!res)
@@ -86,23 +85,34 @@ export class TablePage {
   get_data_table()
   {
     return new Promise((resolve, reject)=>{
-      
-      this.dbTableProvider.get_table({outlet: this.outlet})
-      .then( (res:any)=>{
-        console.log(res)
-        res = !this.helper.isJSON(res)? res : JSON.parse(res);
-        if(res.code == 200)
-        {
-           resolve()
-          this.tableNum = res.results;
-        }else
-        {
-          reject()
-        }
-      })
-      .catch(()=>{
-          reject()
-      })
+      if(this.helper.is_online())
+      {
+        this.dbTableProvider.get_table({outlet: this.outlet})
+        .then( (res:any)=>{
+          res = !this.helper.isJSON(res)? res : JSON.parse(res);
+          if(res.code == 200)
+          {
+            this.helper.storage.set('md_table', res);
+            this.tableNum = res.results;
+            resolve()
+          }else
+          {
+            reject()
+          }
+        })
+        .catch(()=>{
+            reject()
+        })
+      }else
+      {
+        this.helper.storage.get('md_table')
+        .then((res:any)=>{
+            this.tableNum = res.results;
+             resolve()
+        },()=>{
+            reject()
+        })
+      }
     })
   }
 

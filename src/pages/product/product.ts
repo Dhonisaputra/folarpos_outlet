@@ -102,7 +102,6 @@ export class ProductPage
 			data.receipt = res;
 			if(!res.visitor_name || !res.visitor_table || res.receipts.length < 1)
 			{
-				console.error('Please fill table and name');
 				this.helper.alertCtrl.create({
         			title: "Kesalahan",
         			message: "Mohon untuk mengisi nama atau meja pembeli",
@@ -274,22 +273,39 @@ export class ProductPage
 
     get_categories()
     {
-    	let url = this.helper.config.base_url('admin/outlet/product/categories');
-    	let data = {
-    		outlet_id: this.outlet
-    	}
-    	this.helper.loading_countdown({
-    		url: url, data:data
-    	})
-    	.then((res:any) => {
-			res = !this.helper.isJSON(res)? res : JSON.parse(res);
-    		if(res.code == 200)
-    		{
-				let variable = this.helper.local.get_params(this.helper.config.variable.credential)
-				variable['type_product'] = res.data;
-				this.helper.local.set_params(this.helper.config.variable.credential, variable)
-    		}
-    	})
+    	if(this.helper.local.get_params('connection'))
+      	{
+	    	let url = this.helper.config.base_url('admin/outlet/product/categories');
+	    	let data = {
+	    		outlet_id: this.outlet
+	    	}
+	    	this.helper.loading_countdown({
+	    		url: url, data:data
+	    	})
+	    	.then((res:any) => {
+            	this.helper.storage.set('md_categories', res);
+				res = !this.helper.isJSON(res)? res : JSON.parse(res);
+	    		if(res.code == 200)
+	    		{
+					let variable = this.helper.local.get_params(this.helper.config.variable.credential)
+					variable['type_product'] = res.data;
+					this.helper.local.set_params(this.helper.config.variable.credential, variable)
+	    		}
+	    	})
+	    }else
+	    {
+	    	this.helper.storage.get('md_categories')
+	        .then((res:any)=>{
+	        	res = !this.helper.isJSON(res)? res : JSON.parse(res);
+	    		if(res.code == 200)
+	    		{
+					let variable = this.helper.local.get_params(this.helper.config.variable.credential)
+					variable['type_product'] = res.data;
+					this.helper.local.set_params(this.helper.config.variable.credential, variable)
+	    		}
+	        },()=>{
+	        })
+	    }
     }
 	get_product(data:any)
 	{
@@ -498,22 +514,39 @@ export class ProductPage
 					break;
 			}
 		})
-		return this.billProvider.get_unpaid_bill({
-			outlet: this.outlet,
-			fields: 'payment_nominal,outlet,pay_id,payment_date_only,payment_cancel_status',
-			where: {
-				payment_date_only: moment().format('YYYY-MM-DD'),
-				payment_nominal: 0,
-				payment_cancel_status: 0,
+      	
+      	if(this.helper.local.get_params('connection'))
+      	{
 
-			}
-		}, {
-			onload_title: "memperbarui data order pending. "
-		})
-		.then((res:any) => {
-			res = !this.helper.isJSON(res)? res : JSON.parse(res);
-			this.unpaid_bill_length = res.data.length
-		})
+			return this.billProvider.get_unpaid_bill({
+				outlet: this.outlet,
+				fields: 'payment_nominal,outlet,pay_id,payment_date_only,payment_cancel_status',
+				where: {
+					payment_date_only: moment().format('YYYY-MM-DD'),
+					payment_nominal: 0,
+					payment_cancel_status: 0,
+
+				}
+			}, {
+				onload_title: "memperbarui data order pending. "
+			})
+			.then((res:any) => {
+	            this.helper.storage.set('mg_bill', res);
+
+				res = !this.helper.isJSON(res)? res : JSON.parse(res);
+				this.unpaid_bill_length = res.data.length
+				return res;
+			})
+      	}else
+      	{
+      		return this.helper.storage.get('mg_bill')
+	        .then((res:any)=>{
+	        	res = !this.helper.isJSON(res)? res : JSON.parse(res);
+				this.unpaid_bill_length = res.data.length
+				return res;
+	        },()=>{
+	        })
+      	}
 	}
 
 	pay_bill()

@@ -1,7 +1,14 @@
 <ion-menu [content]="content" side="left" id="menu1">
     <ion-header color="main">
       <ion-toolbar color="main">
-          <ion-title>Menu</ion-title>
+          <ion-title>
+            Menu
+
+            <!-- status online or no -->
+            <span class="pull-right">
+              {{!helper.is_online()?'offline':''}}
+            </span>
+          </ion-title>
       </ion-toolbar>
     </ion-header>
 
